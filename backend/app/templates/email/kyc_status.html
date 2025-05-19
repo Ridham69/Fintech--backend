@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KYC Status Update</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #f8f9fa;
+        }
+        .content {
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .status-box {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .status-approved {
+            border-color: #28a745;
+            background-color: #f8fff8;
+        }
+        .status-pending {
+            border-color: #ffc107;
+            background-color: #fffdf8;
+        }
+        .status-rejected {
+            border-color: #dc3545;
+            background-color: #fff8f8;
+        }
+        .status-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .status-approved .status-header {
+            color: #28a745;
+        }
+        .status-pending .status-header {
+            color: #ffc107;
+        }
+        .status-rejected .status-header {
+            color: #dc3545;
+        }
+        .status-details {
+            margin: 20px 0;
+        }
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .status-label {
+            font-weight: bold;
+            color: #666;
+        }
+        .status-value {
+            text-align: right;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+        .timestamp {
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+        }
+        .next-steps {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>KYC Status Update</h1>
+        </div>
+        <div class="content">
+            <div class="status-box status-{{ status.lower() }}">
+                <div class="status-header">
+                    KYC Status: {{ status }}
+                </div>
+                <div class="status-details">
+                    <div class="status-row">
+                        <span class="status-label">Update Date:</span>
+                        <span class="status-value">{{ timestamp }}</span>
+                    </div>
+                    {% if additional_info %}
+                    {% for key, value in additional_info.items() %}
+                    <div class="status-row">
+                        <span class="status-label">{{ key }}:</span>
+                        <span class="status-value">{{ value }}</span>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if status.lower() == 'approved' %}
+            <div class="next-steps">
+                <h3>Next Steps</h3>
+                <p>Your KYC verification has been approved. You can now:</p>
+                <ul>
+                    <li>Start investing in available opportunities</li>
+                    <li>Set up your investment preferences</li>
+                    <li>Explore our investment products</li>
+                </ul>
+            </div>
+            {% elif status.lower() == 'pending' %}
+            <div class="next-steps">
+                <h3>Next Steps</h3>
+                <p>Your KYC verification is being reviewed. We will notify you once the process is complete.</p>
+                <p>Estimated processing time: 1-2 business days</p>
+            </div>
+            {% elif status.lower() == 'rejected' %}
+            <div class="next-steps">
+                <h3>Next Steps</h3>
+                <p>Your KYC verification requires attention. Please:</p>
+                <ul>
+                    <li>Review the rejection reason</li>
+                    <li>Update your information if needed</li>
+                    <li>Resubmit your KYC application</li>
+                </ul>
+            </div>
+            {% endif %}
+
+            <p style="text-align: center;">
+                <a href="{{ dashboard_url }}" class="button">View Dashboard</a>
+            </p>
+            <div class="timestamp">
+                Status updated on: {{ timestamp }}
+            </div>
+        </div>
+        <div class="footer">
+            <p>This is an automated message from {{ app_name }}. Please do not reply to this email.</p>
+            {% if support_email %}
+            <p>For support, please contact: {{ support_email }}</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html> 

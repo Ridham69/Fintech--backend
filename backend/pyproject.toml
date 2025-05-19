@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autoinvest-backend"
+version = "0.1.0"
+description = "Automated Investment Platform for Indian Retail Investors"
+authors = [
+    { name = "AutoInvest Team", email = "team@autoinvest.com" }
+]
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Proprietary" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Framework :: FastAPI",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+
+[project.urls]
+Documentation = "https://docs.autoinvest.com"
+Repository = "https://github.com/autoinvest/backend"
+
+[tool.setuptools]
+packages = ["app"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+select = ["E", "F", "B", "I", "N", "UP", "PL", "RUF"]
+ignore = ["E501"]
+
+[tool.ruff.isort]
+known-first-party = ["app"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["app"]
+omit = ["tests/*", "app/migrations/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "pass",
+    "raise ImportError",
+] 

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #f8f9fa;
+        }
+        .content {
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to {{ app_name }}!</h1>
+        </div>
+        <div class="content">
+            <h2>Verify Your Email Address</h2>
+            <p>Thank you for signing up! Please verify your email address by clicking the button below:</p>
+            <p style="text-align: center;">
+                <a href="{{ verification_url }}" class="button">Verify Email Address</a>
+            </p>
+            <p>If the button doesn't work, you can also copy and paste this link into your browser:</p>
+            <p style="word-break: break-all;">{{ verification_url }}</p>
+            <p>This link will expire in 24 hours.</p>
+        </div>
+        <div class="footer">
+            <p>This email was sent by {{ app_name }}. If you didn't create an account, you can safely ignore this email.</p>
+        </div>
+    </div>
+</body>
+</html> 

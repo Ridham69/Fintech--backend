@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #f8f9fa;
+        }
+        .content {
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .priority-high {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .priority-normal {
+            color: #28a745;
+        }
+        .priority-low {
+            color: #6c757d;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+        .timestamp {
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{ app_name }}</h1>
+        </div>
+        <div class="content">
+            <h2 class="priority-{{ priority }}">{{ title }}</h2>
+            <div class="message">
+                {{ message | safe }}
+            </div>
+            {% if dashboard_url %}
+            <p style="text-align: center;">
+                <a href="{{ dashboard_url }}" class="button">View in Dashboard</a>
+            </p>
+            {% endif %}
+            <div class="timestamp">
+                Sent on: {{ timestamp }}
+            </div>
+        </div>
+        <div class="footer">
+            <p>This is an automated message from {{ app_name }}. Please do not reply to this email.</p>
+            {% if support_email %}
+            <p>For support, please contact: {{ support_email }}</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html> 
