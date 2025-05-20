@@ -44,6 +44,10 @@ jobs:
       DB_POSTGRES_DB: test_db
       DB_REDIS_HOST: localhost
 
+      
+      # ✅ Add SECRET_KEY for Pydantic Settings
+      SECRET_KEY: "dummy_secret_for_ci"
+
       # ✅ Add AUTH_JWT_SECRET_KEY for AuthConfig
       AUTH_JWT_SECRET_KEY: "dummy_jwt_secret_for_ci"
 
