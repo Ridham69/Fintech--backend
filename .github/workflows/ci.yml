@@ -104,6 +104,11 @@ jobs:
         working-directory: ./backend
         env:
           PYTHONPATH: ${{ github.workspace }}/backend
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_pass
+          POSTGRES_DB: test_db
+          REDIS_HOST: localhost
         run: |
           source venv/bin/activate
           pytest app/tests
