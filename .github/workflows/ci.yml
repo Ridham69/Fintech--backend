@@ -44,6 +44,9 @@ jobs:
       DB_POSTGRES_DB: test_db
       DB_REDIS_HOST: localhost
 
+      # ✅ Add AUTH_JWT_SECRET_KEY for AuthConfig
+      AUTH_JWT_SECRET_KEY: "dummy_jwt_secret_for_ci"
+
       # ✅ Celery-related environment variables
       BROKER_URL: redis://localhost:6379/0
       RESULT_BACKEND: redis://localhost:6379/1
@@ -109,6 +112,7 @@ jobs:
           DB_POSTGRES_PASSWORD: test_pass
           DB_POSTGRES_DB: test_db
           DB_REDIS_HOST: localhost
+          AUTH_JWT_SECRET_KEY: "dummy_jwt_secret_for_ci"
         run: |
           source venv/bin/activate
           pytest app/tests
