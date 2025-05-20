@@ -41,7 +41,7 @@ def create_engine() -> AsyncEngine:
         logger.info(f"Creating database engine for {log_url}")
         
         engine = create_async_engine(
-            settings.db.DATABASE_URL,
+            str(settings.db.DATABASE_URL),
             echo=settings.app.DEBUG,
             pool_pre_ping=True,
             pool_size=settings.db.POSTGRES_MAX_POOL_SIZE,
