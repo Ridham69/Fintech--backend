@@ -38,18 +38,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Show repo structure (optional debug)
+      - name: Show backend layout
         run: |
           pwd
           ls -la
-          ls -la app
+          ls -la backend
+          ls -la backend/app
 
       - name: Set up Python, install dependencies, and run tests
+        working-directory: ./backend
         env:
           PYTHONPATH: ${{ github.workspace }}/backend
         run: |
           python -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
-          pip install -r requirements.txt
-          pytest
+          pip install -r ../requirements.txt
+          pytest app/tests
