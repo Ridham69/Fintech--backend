@@ -53,6 +53,7 @@ jobs:
       - name: Set up Python, install dependencies, and run tests
         working-directory: ./backend
         env:
+         PYTHONPATH: ${{ github.workspace }}/backend 
          DB_POSTGRES_HOST: localhost
          DB_POSTGRES_USER: test_user
          DB_POSTGRES_PASSWORD: test_pass
