@@ -55,6 +55,20 @@ jobs:
       # ✅ FIX: Use SECURITY_CSRF_SECRET to match SecurityConfig
       SECURITY_CSRF_SECRET: ${{ secrets.SECURITY_CSRF_SECRET }}
 
+      # ✅ Add EXTERNAL_ third-party dummy secrets for ThirdPartyConfig
+      EXTERNAL_RAZORPAY_KEY_ID: ${{ secrets.EXTERNAL_RAZORPAY_KEY_ID }}
+      EXTERNAL_RAZORPAY_KEY_SECRET: ${{ secrets.EXTERNAL_RAZORPAY_KEY_SECRET }}
+      EXTERNAL_RAZORPAY_WEBHOOK_SECRET: ${{ secrets.EXTERNAL_RAZORPAY_WEBHOOK_SECRET }}
+      EXTERNAL_AWS_ACCESS_KEY_ID: ${{ secrets.EXTERNAL_AWS_ACCESS_KEY_ID }}
+      EXTERNAL_AWS_SECRET_ACCESS_KEY: ${{ secrets.EXTERNAL_AWS_SECRET_ACCESS_KEY }}
+      EXTERNAL_AWS_S3_BUCKET: ${{ secrets.EXTERNAL_AWS_S3_BUCKET }}
+      EXTERNAL_SMS_API_KEY: ${{ secrets.EXTERNAL_SMS_API_KEY }}
+      EXTERNAL_SMS_SENDER_ID: ${{ secrets.EXTERNAL_SMS_SENDER_ID }}
+      EXTERNAL_SMTP_HOST: ${{ secrets.EXTERNAL_SMTP_HOST }}
+      EXTERNAL_SMTP_USER: ${{ secrets.EXTERNAL_SMTP_USER }}
+      EXTERNAL_SMTP_PASSWORD: ${{ secrets.EXTERNAL_SMTP_PASSWORD }}
+      EXTERNAL_SMTP_FROM_EMAIL: ${{ secrets.EXTERNAL_SMTP_FROM_EMAIL }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -87,6 +101,20 @@ jobs:
 
           # ✅ FIX: Use SECURITY_CSRF_SECRET to match SecurityConfig
           SECURITY_CSRF_SECRET: ${{ secrets.SECURITY_CSRF_SECRET }}
+
+          # ✅ Add EXTERNAL_ third-party dummy secrets for ThirdPartyConfig
+          EXTERNAL_RAZORPAY_KEY_ID: ${{ secrets.EXTERNAL_RAZORPAY_KEY_ID }}
+          EXTERNAL_RAZORPAY_KEY_SECRET: ${{ secrets.EXTERNAL_RAZORPAY_KEY_SECRET }}
+          EXTERNAL_RAZORPAY_WEBHOOK_SECRET: ${{ secrets.EXTERNAL_RAZORPAY_WEBHOOK_SECRET }}
+          EXTERNAL_AWS_ACCESS_KEY_ID: ${{ secrets.EXTERNAL_AWS_ACCESS_KEY_ID }}
+          EXTERNAL_AWS_SECRET_ACCESS_KEY: ${{ secrets.EXTERNAL_AWS_SECRET_ACCESS_KEY }}
+          EXTERNAL_AWS_S3_BUCKET: ${{ secrets.EXTERNAL_AWS_S3_BUCKET }}
+          EXTERNAL_SMS_API_KEY: ${{ secrets.EXTERNAL_SMS_API_KEY }}
+          EXTERNAL_SMS_SENDER_ID: ${{ secrets.EXTERNAL_SMS_SENDER_ID }}
+          EXTERNAL_SMTP_HOST: ${{ secrets.EXTERNAL_SMTP_HOST }}
+          EXTERNAL_SMTP_USER: ${{ secrets.EXTERNAL_SMTP_USER }}
+          EXTERNAL_SMTP_PASSWORD: ${{ secrets.EXTERNAL_SMTP_PASSWORD }}
+          EXTERNAL_SMTP_FROM_EMAIL: ${{ secrets.EXTERNAL_SMTP_FROM_EMAIL }}
 
         run: |
           python -m venv venv
