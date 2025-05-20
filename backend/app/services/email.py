@@ -256,4 +256,9 @@ class EmailService:
             )
         except Exception as e:
             logger.error(f"Failed to send system notification: {str(e)}")
-            raise EmailError(f"Failed to send system notification: {str(e)}") 
+            raise EmailError(f"Failed to send system notification: {str(e)}")
+
+# --- Module-level export for compatibility ---
+send_email = send_email_async
+
+__all__ = ["EmailService", "send_email"]
