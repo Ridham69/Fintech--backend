@@ -216,7 +216,7 @@ python-multipart==0.0.6
 pytweening==1.2.0
 pytz==2025.2
 pywin32==306; sys_platform == "win32"
-pywinpty==2.0.15
+pywinpty==2.0.10
 PyYAML==6.0.2
 pyyaml_env_tag==1.1
 pyzmq==26.0.2
