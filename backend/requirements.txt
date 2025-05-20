@@ -74,3 +74,5 @@ python-magic==0.4.27
 
 # Additional Dependencies
 asyncpg
+
+loguru>=0.7.0
