@@ -46,7 +46,7 @@ jobs:
 
       - name: Set up Python, install dependencies, and run tests
         env:
-          PYTHONPATH: ${{ github.workspace }}
+          PYTHONPATH: ${{ github.workspace }}/backend
         run: |
           python -m venv venv
           source venv/bin/activate
