@@ -67,7 +67,8 @@ jobs:
       EXTERNAL_SMTP_HOST: ${{ secrets.EXTERNAL_SMTP_HOST }}
       EXTERNAL_SMTP_USER: ${{ secrets.EXTERNAL_SMTP_USER }}
       EXTERNAL_SMTP_PASSWORD: ${{ secrets.EXTERNAL_SMTP_PASSWORD }}
-      EXTERNAL_SMTP_FROM_EMAIL: ${{ secrets.EXTERNAL_SMTP_FROM_EMAIL }}
+      # Use a valid dummy email if the secret is not set
+      EXTERNAL_SMTP_FROM_EMAIL: ${{ secrets.EXTERNAL_SMTP_FROM_EMAIL || 'dummy@example.com' }}
 
     steps:
       - name: Checkout code
@@ -114,7 +115,8 @@ jobs:
           EXTERNAL_SMTP_HOST: ${{ secrets.EXTERNAL_SMTP_HOST }}
           EXTERNAL_SMTP_USER: ${{ secrets.EXTERNAL_SMTP_USER }}
           EXTERNAL_SMTP_PASSWORD: ${{ secrets.EXTERNAL_SMTP_PASSWORD }}
-          EXTERNAL_SMTP_FROM_EMAIL: ${{ secrets.EXTERNAL_SMTP_FROM_EMAIL }}
+          # Use a valid dummy email if the secret is not set
+          EXTERNAL_SMTP_FROM_EMAIL: ${{ secrets.EXTERNAL_SMTP_FROM_EMAIL || 'ridhamking12345@gmail.com' }}
 
         run: |
           python -m venv venv
