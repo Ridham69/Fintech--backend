@@ -87,7 +87,7 @@ class Notification(Base):
     )
     is_read: Mapped[bool] = Column(Boolean, nullable=False, default=False)
     read_at: Mapped[Optional[datetime]] = Column(DateTime(timezone=True))
-    metadata: Mapped[Optional[dict]] = Column(JSON)
+    meta_info: Mapped[Optional[dict]] = Column(JSON, name="metadata")
     created_at: Mapped[datetime] = Column(
         DateTime(timezone=True),
         nullable=False,
