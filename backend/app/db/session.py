@@ -71,12 +71,11 @@ def create_engine() -> AsyncEngine:
 # Create engine instance
 engine = create_engine()
 
-# Create session factory
-AsyncSessionLocal = async_sessionmaker(
+# Exported async sessionmaker for use in dependencies and imports
+async_session = async_sessionmaker(
     engine,
     class_=AsyncSession,
-    expire_on_commit=False,
-    autoflush=False
+    expire_on_commit=False
 )
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
@@ -94,7 +93,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
             return items.scalars().all()
         ```
     """
-    session = AsyncSessionLocal()
+    session = async_session()
     
     try:
         logger.debug("Creating new database session")
@@ -128,7 +127,7 @@ async def get_db_context() -> AsyncIterator[AsyncSession]:
             users = result.scalars().all()
         ```
     """
-    session = AsyncSessionLocal()
+    session = async_session()
     
     try:
         logger.debug("Creating new database session (context)")
@@ -176,3 +175,5 @@ async def check_db_connection() -> bool:
             extra={"error": str(e)}
         )
         return False 
+
+__all__ = ["async_session", "engine", "get_db", "get_db_context", "check_db_connection"]
