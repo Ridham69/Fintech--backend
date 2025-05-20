@@ -47,6 +47,10 @@ jobs:
       # ✅ Celery-related environment variables
       BROKER_URL: redis://localhost:6379/0
       RESULT_BACKEND: redis://localhost:6379/1
+      
+      # ✅ Add Celery variables from secrets
+      CELERY_BROKER_URL: ${{ secrets.CELERY_BROKER_URL }}
+      CELERY_RESULT_BACKEND: ${{ secrets.CELERY_RESULT_BACKEND }}
 
     steps:
       - name: Checkout code
@@ -73,6 +77,10 @@ jobs:
           # ✅ Include Celery vars here too, just to be safe
           BROKER_URL: redis://localhost:6379/0
           RESULT_BACKEND: redis://localhost:6379/1
+          
+          # ✅ Add Celery variables from secrets
+          CELERY_BROKER_URL: ${{ secrets.CELERY_BROKER_URL }}
+          CELERY_RESULT_BACKEND: ${{ secrets.CELERY_RESULT_BACKEND }}
 
         run: |
           python -m venv venv
