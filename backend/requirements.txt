@@ -11,7 +11,7 @@ psycopg2-binary==2.9.9
 asyncpg==0.29.0
 redis==5.0.1
 
-# Authentication & Security
+# Authentication & Securitys
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 python-dotenv==1.0.0
@@ -71,3 +71,6 @@ xlsxwriter==3.1.9
 # Image Processing (for KYC)
 Pillow==10.1.0
 python-magic==0.4.27 
+
+# Additional Dependencies
+asyncpg
