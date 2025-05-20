@@ -116,6 +116,7 @@ kiwisolver==1.4.8
 kombu==5.5.3
 lazy_loader==0.4
 libclang==18.1.1
+loguru>=0.7.0
 Mako==1.3.10
 Markdown==3.8
 markdown-it-py==3.0.0
