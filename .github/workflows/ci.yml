@@ -92,7 +92,7 @@ jobs:
           python -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
-          pip install -r ../requirements.txt
+          pip install -r requirements.txt
           
       - name: Show installed packages (debug)
         working-directory: ./backend
@@ -104,38 +104,6 @@ jobs:
         working-directory: ./backend
         env:
           PYTHONPATH: ${{ github.workspace }}/backend
-          DB_POSTGRES_HOST: localhost
-          DB_POSTGRES_USER: test_user
-          DB_POSTGRES_PASSWORD: test_pass
-          DB_POSTGRES_DB: test_db
-          DB_REDIS_HOST: localhost
-          AUTH_JWT_SECRET_KEY: testsecret
-
-          # ✅ Include Celery vars here too, just to be safe
-          BROKER_URL: redis://localhost:6379/0
-          RESULT_BACKEND: redis://localhost:6379/1
-          
-          # ✅ Add Celery variables from secrets
-          CELERY_BROKER_URL: ${{ secrets.CELERY_BROKER_URL }}
-          CELERY_RESULT_BACKEND: ${{ secrets.CELERY_RESULT_BACKEND }}
-
-          # ✅ FIX: Use SECURITY_CSRF_SECRET to match SecurityConfig
-          SECURITY_CSRF_SECRET: ${{ secrets.SECURITY_CSRF_SECRET }}
-
-          # ✅ Add EXTERNAL_ third-party dummy secrets for ThirdPartyConfig
-          EXTERNAL_RAZORPAY_KEY_ID: ${{ secrets.EXTERNAL_RAZORPAY_KEY_ID }}
-          EXTERNAL_RAZORPAY_KEY_SECRET: ${{ secrets.EXTERNAL_RAZORPAY_KEY_SECRET }}
-          EXTERNAL_RAZORPAY_WEBHOOK_SECRET: ${{ secrets.EXTERNAL_RAZORPAY_WEBHOOK_SECRET }}
-          EXTERNAL_AWS_ACCESS_KEY_ID: ${{ secrets.EXTERNAL_AWS_ACCESS_KEY_ID }}
-          EXTERNAL_AWS_SECRET_ACCESS_KEY: ${{ secrets.EXTERNAL_AWS_SECRET_ACCESS_KEY }}
-          EXTERNAL_AWS_S3_BUCKET: ${{ secrets.EXTERNAL_AWS_S3_BUCKET }}
-          EXTERNAL_SMS_API_KEY: ${{ secrets.EXTERNAL_SMS_API_KEY }}
-          EXTERNAL_SMS_SENDER_ID: ${{ secrets.EXTERNAL_SMS_SENDER_ID }}
-          EXTERNAL_SMTP_HOST: ${{ secrets.EXTERNAL_SMTP_HOST }}
-          EXTERNAL_SMTP_USER: ${{ secrets.EXTERNAL_SMTP_USER }}
-          EXTERNAL_SMTP_PASSWORD: ${{ secrets.EXTERNAL_SMTP_PASSWORD }}
-          # Use a valid dummy email if the secret is not set
-          EXTERNAL_SMTP_FROM_EMAIL: ${{ secrets.EXTERNAL_SMTP_FROM_EMAIL || 'ridhamking12345@gmail.com' }}
         run: |
           source venv/bin/activate
           pytest app/tests
