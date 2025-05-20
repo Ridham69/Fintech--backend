@@ -140,3 +140,8 @@ class NotFoundError(AppException):
             details=details,
             headers=headers,
         )
+
+ 
+class EmailError(Exception):
+    """Custom exception for email-related errors."""
+    pass
