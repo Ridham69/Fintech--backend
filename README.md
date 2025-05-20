@@ -1,86 +1,172 @@
-# AutoInvest India - Automated Investment Platform
 
-A secure, compliant fintech platform that automatically invests a portion of users' payments into index funds through Indian broker APIs. Built with Next.js, FastAPI, and PostgreSQL.
+# AutoInvest India Backend
 
-## Core Features
+A robust, async FastAPI backend powering a secure fintech platform that automatically invests a portion of each user transaction into index funds. Designed for extensibility, compliance, and high reliability in the Indian financial ecosystem.
 
-- Automated investment rules based on payment triggers
-- UPI payment integration with major Indian payment gateways
-- Broker integration (Zerodha, etc.) for automated investments
-- Complete KYC and bank account linking flow
-- Real-time notifications and investment tracking
-- Secure user dashboard and analytics
-- Admin portal for monitoring and compliance
-- Comprehensive audit logging and error tracking
+---
 
-## Tech Stack
+## ✅ Features
 
-### Frontend
-- Next.js 14+ with TypeScript
-- TailwindCSS for styling
-- React Query for state management
-- React Hook Form for form handling
-- NextAuth.js for authentication
+- [x] Async FastAPI architecture for high performance
+- [x] Automated investment of user transactions into index funds
+- [x] Modular codebase (`auth`, `transactions`, `investments`, `notifications`, `kyc`, `feature_flags`)
+- [x] JWT-based authentication and RBAC
+- [x] PostgreSQL (async SQLAlchemy) for persistent storage
+- [x] Redis for caching and Celery for background task processing
+- [x] Real-time notifications and investment tracking
+- [x] Comprehensive logging and exception handling
+- [x] Prometheus & Grafana monitoring integration
+- [x] Sentry for error tracking
+- [x] Fully covered with Pytest test cases
+- [x] Docker & docker-compose support for easy deployment
+- [x] .env-based configuration for secure secrets management
+- [x] Extensible for future features (subscriptions, ML fraud detection, etc.)
 
-### Backend
-- FastAPI (Python 3.11+)
-- PostgreSQL with SQLAlchemy ORM
-- Redis for caching and rate limiting
-- Celery for async task processing
-- Alembic for database migrations
+---
 
-### Infrastructure
-- Docker and Docker Compose
-- AWS (ECS, RDS, ElastiCache, S3)
-- GitHub Actions for CI/CD
-- Prometheus and Grafana for monitoring
-- Sentry for error tracking
+## 🛠 Tech Stack
 
-### Security & Compliance
-- JWT-based authentication
-- Role-based access control (RBAC)
-- End-to-end encryption for sensitive data
-- Comprehensive audit logging
-- Rate limiting and DDoS protection
+- **Framework:** FastAPI (async)
+- **Database:** PostgreSQL (async SQLAlchemy)
+- **Cache/Queue:** Redis, Celery
+- **Monitoring:** Prometheus, Grafana
+- **Error Tracking:** Sentry
+- **Auth:** JWT (PyJWT)
+- **Testing:** Pytest
+- **Containerization:** Docker, docker-compose
+- **Other:** dotenv, logging, modular Python structure
 
-## Getting Started
+---
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   # Frontend
-   cd frontend
-   npm install
+## 📁 Directory Structure
 
-   # Backend
-   cd backend
-   python -m venv venv
-   source venv/bin/activate  # or `venv\Scripts\activate` on Windows
-   pip install -r requirements.txt
-   ```
+```
+backend/
+├── app/
+│   ├── auth/              # Authentication & RBAC
+│   ├── transactions/      # Payment & transaction logic
+│   ├── investments/       # Investment automation logic
+│   ├── notifications/     # Notification services
+│   ├── kyc/               # KYC and compliance
+│   ├── feature_flags/     # Feature flag management
+│   ├── core/              # Core configs, logging, security
+│   ├── db/                # Database models & session
+│   ├── tasks/             # Celery tasks
+│   ├── integrations/      # Third-party APIs (brokers, payment gateways)
+│   ├── utils/             # Utility functions
+│   └── main.py            # FastAPI entrypoint
+├── tests/                 # Pytest test cases
+├── alembic/               # DB migrations
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── .env.example
+└── README.md
+```
 
-3. Set up environment variables (see .env.example)
-4. Start development servers:
-   ```bash
-   # Frontend
-   npm run dev
+---
 
-   # Backend
-   uvicorn app.main:app --reload
-   ```
+## 🚀 Setup Instructions
 
-## Project Structure
+### 1. Clone the Repository
 
-See ARCHITECTURE.md for detailed component breakdown.
+```bash
+git clone https://github.com/Ridham69/Fintech--backend
+cd fintech-backend/backend
+```
 
-## Security and Compliance
+### 2. Local Development Setup
 
-This platform is designed to meet RBI and SEBI guidelines for fintech applications. All sensitive data is encrypted, and the system maintains comprehensive audit logs.
+#### a. Python Environment
 
-## Contributing
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-See CONTRIBUTING.md for development guidelines.
+#### b. Environment Variables
 
-## License
+- Copy .env.example to .env and fill in variables like:
 
-Proprietary - All rights reserved 
+DATABASE_URL
+
+SECRET_KEY
+
+REDIS_URL
+
+SENTRY_DSN
+
+#### c. Database & Redis
+
+- Ensure PostgreSQL and Redis are running locally, or use Docker Compose (see below).
+
+#### d. Run Migrations
+
+```bash
+alembic upgrade head
+```
+
+#### e. Start the FastAPI Server
+
+```bash
+uvicorn app.main:app --reload
+```
+
+### 3. Docker Setup (Recommended)
+
+```bash
+docker-compose up --build
+```
+
+- This will start FastAPI, PostgreSQL, Redis, and Celery worker containers.
+
+---
+
+## 📖 Usage Instructions
+
+- The API will be available at: `http://localhost:8000`
+- Interactive API docs: `http://localhost:8000/docs`
+- Use JWT tokens for authenticated endpoints (see `/auth/login`).
+
+---
+
+## 🧪 Running Tests
+
+```bash
+pytest
+```
+
+- All modules are covered with unit and integration tests.
+- Coverage reports are generated in `htmlcov/` if enabled.
+
+---
+
+## 📊 Monitoring & Error Tracking
+
+- **Prometheus** metrics exposed at `/metrics` (enable in config).
+- **Grafana** dashboards can be configured to visualize metrics.
+- **Sentry** is integrated for real-time error logging (configure DSN in `.env`).
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository and create your branch.
+2. Write clear, well-tested code.
+3. Ensure all tests pass (`pytest`).
+4. Submit a pull request with a clear description.
+
+See [CONTRIBUTING.md](../docs/CONTRIBUTING.md) for more details.
+
+---
+
+## 📬 Contact & License
+
+- **Contact:** [ridhamking12345@gmail.com]
+- **License:** Proprietary – All rights reserved.
+
+---
+
+> _This backend is designed for extensibility and compliance with Indian fintech regulations. For architecture details, see `ARCHITECTURE.md`._
+
