@@ -29,6 +29,11 @@ jobs:
         image: redis
         ports:
           - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     env:
       DATABASE_URL: postgresql+asyncpg://test_user:test_pass@localhost:5432/test_db
@@ -38,6 +43,10 @@ jobs:
       POSTGRES_PASSWORD: test_pass
       POSTGRES_DB: test_db
       REDIS_HOST: localhost
+
+      # ✅ Celery-related environment variables
+      BROKER_URL: redis://localhost:6379/0
+      RESULT_BACKEND: redis://localhost:6379/1
 
     steps:
       - name: Checkout code
@@ -53,13 +62,17 @@ jobs:
       - name: Set up Python, install dependencies, and run tests
         working-directory: ./backend
         env:
-         PYTHONPATH: ${{ github.workspace }}/backend 
-         DB_POSTGRES_HOST: localhost
-         DB_POSTGRES_USER: test_user
-         DB_POSTGRES_PASSWORD: test_pass
-         DB_POSTGRES_DB: test_db
-         DB_REDIS_HOST: localhost
-         AUTH_JWT_SECRET_KEY: testsecret
+          PYTHONPATH: ${{ github.workspace }}/backend
+          DB_POSTGRES_HOST: localhost
+          DB_POSTGRES_USER: test_user
+          DB_POSTGRES_PASSWORD: test_pass
+          DB_POSTGRES_DB: test_db
+          DB_REDIS_HOST: localhost
+          AUTH_JWT_SECRET_KEY: testsecret
+
+          # ✅ Include Celery vars here too, just to be safe
+          BROKER_URL: redis://localhost:6379/0
+          RESULT_BACKEND: redis://localhost:6379/1
 
         run: |
           python -m venv venv
