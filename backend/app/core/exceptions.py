@@ -112,6 +112,21 @@ class InternalServerError(AppException):
         )
 
 
+class ValidationError(AppException):
+    def __init__(
+        self,
+        message: str = "Validation failed.",
+        details: Optional[Any] = None,
+        headers: Optional[dict] = None,
+    ):
+        super().__init__(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            message=message,
+            details=details,
+            headers=headers,
+        )
+
+
 class NotFoundError(AppException):
     def __init__(
         self,
