@@ -110,4 +110,18 @@ class InternalServerError(AppException):
             details=details,
             headers=headers,
         )
-    NotFoundError = NotFoundException
+
+
+class NotFoundError(AppException):
+    def __init__(
+        self,
+        message: str = "Resource not found.",
+        details: Optional[Any] = None,
+        headers: Optional[dict] = None,
+    ):
+        super().__init__(
+            status_code=status.HTTP_404_NOT_FOUND,
+            message=message,
+            details=details,
+            headers=headers,
+        )
