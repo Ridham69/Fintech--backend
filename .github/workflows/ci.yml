@@ -86,7 +86,21 @@ jobs:
           ls -la backend
           ls -la backend/app
 
-      - name: Set up Python, install dependencies, and run tests
+      - name: Install dependencies
+        working-directory: ./backend
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r ../requirements.txt
+          
+      - name: Show installed packages (debug)
+        working-directory: ./backend
+        run: |
+          source venv/bin/activate
+          pip list
+          
+      - name: Run tests
         working-directory: ./backend
         env:
           PYTHONPATH: ${{ github.workspace }}/backend
@@ -122,10 +136,6 @@ jobs:
           EXTERNAL_SMTP_PASSWORD: ${{ secrets.EXTERNAL_SMTP_PASSWORD }}
           # Use a valid dummy email if the secret is not set
           EXTERNAL_SMTP_FROM_EMAIL: ${{ secrets.EXTERNAL_SMTP_FROM_EMAIL || 'ridhamking12345@gmail.com' }}
-
         run: |
-          python -m venv venv
           source venv/bin/activate
-          pip install --upgrade pip
-          pip install -r ../requirements.txt
           pytest app/tests
