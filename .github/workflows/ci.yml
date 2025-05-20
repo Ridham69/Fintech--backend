@@ -52,6 +52,9 @@ jobs:
       CELERY_BROKER_URL: ${{ secrets.CELERY_BROKER_URL }}
       CELERY_RESULT_BACKEND: ${{ secrets.CELERY_RESULT_BACKEND }}
 
+      # ✅ Add CSRF_SECRET from secrets
+      CSRF_SECRET: ${{ secrets.CSRF_SECRET }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -81,6 +84,9 @@ jobs:
           # ✅ Add Celery variables from secrets
           CELERY_BROKER_URL: ${{ secrets.CELERY_BROKER_URL }}
           CELERY_RESULT_BACKEND: ${{ secrets.CELERY_RESULT_BACKEND }}
+
+          # ✅ Add CSRF_SECRET from secrets
+          CSRF_SECRET: ${{ secrets.CSRF_SECRET }}
 
         run: |
           python -m venv venv
