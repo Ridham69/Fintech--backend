@@ -110,3 +110,4 @@ class InternalServerError(AppException):
             details=details,
             headers=headers,
         )
+    NotFoundError = NotFoundException
