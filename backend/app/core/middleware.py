@@ -15,9 +15,9 @@ Each middleware is configurable and integrated with the logging system.
 import json
 import time
 import uuid
-from typing import Awaitable, Callable, Dict, Optional, Union
+from typing import Awaitable, Callable, Dict, Optional, Union, Tuple
 
-import aioredis
+import redis.asyncio as aioredis
 import prometheus_client
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
@@ -259,7 +259,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     async def _get_remaining_requests(
         self,
         key: str
-    ) -> tuple[int, int]:
+    ) -> Tuple[int, int]:
         """Get remaining requests for a key."""
         pipeline = self.redis.pipeline()
         now = time.time()
