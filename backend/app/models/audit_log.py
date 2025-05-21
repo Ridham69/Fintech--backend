@@ -32,8 +32,9 @@ class AuditLog(Base):
         server_default="CURRENT_TIMESTAMP",
         index=True
     )
-    metadata: Mapped[Dict[str, Any]] = mapped_column(
+    meta: Mapped[Dict[str, Any]] = mapped_column(
         JSONB,
+        name="metadata",  # Preserve DB column name as 'metadata'
         nullable=False,
         server_default="'{}'::jsonb"
     )
