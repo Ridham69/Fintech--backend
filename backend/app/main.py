@@ -38,7 +38,7 @@ from app.api.v1.routes import auth, kyc, payment, investment
 from app.core import settings
 from app.core.error_handler import handle_exception
 from app.core.logging import setup_logging
-from app.core.middleware import LoggingMiddleware, RequestValidationMiddleware, RequestIdMiddleware, SecurityHeadersMiddleware
+from app.core.middleware import RequestLoggingMiddleware, RequestValidationMiddleware, CorrelationIDMiddleware, SecurityHeadersMiddleware
 from app.db.session import SessionLocal, engine
 from app.monitoring.opentelemetry import setup_telemetry
 from app.monitoring.prometheus import setup_metrics
@@ -262,9 +262,9 @@ def create_application() -> FastAPI:
 
     # Add custom middleware in correct order
     app.add_middleware(PrometheusMiddleware)  # First to capture all requests
-    app.add_middleware(LoggingMiddleware)
+    app.add_middleware(RequestLoggingMiddleware)
     app.add_middleware(RequestValidationMiddleware)
-    app.add_middleware(RequestIdMiddleware)
+    app.add_middleware(CorrelationIDMiddleware)
     app.add_middleware(SecurityHeadersMiddleware)
 
     # Mount Prometheus metrics endpoint with authentication
@@ -354,3 +354,8 @@ if __name__ == "__main__":
         proxy_headers=True,
         forwarded_allow_ips="*"
     ) 
+
+
+
+
+    

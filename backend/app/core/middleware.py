@@ -386,3 +386,7 @@ def add_middlewares(
     app.add_middleware(SecurityHeadersMiddleware)
     
     logger.info("All middleware components registered successfully") 
+
+
+LoggingMiddleware = RequestLoggingMiddleware
+RequestIdMiddleware = CorrelationIDMiddleware
