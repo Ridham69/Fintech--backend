@@ -2,22 +2,18 @@
 Database Session Module
 
 This module manages database connections and sessions with:
-- Async SQLAlchemy engine configuration
+- SQLAlchemy engine configuration
 - Session factory and dependency injection
 - Connection health checks
 - Error handling and logging
 """
 
 import contextlib
-from typing import AsyncGenerator, AsyncIterator
+from typing import Generator, Iterator
 
+from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.asyncio import (
-    AsyncEngine,
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine
-)
+from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.settings import settings
 from app.core.logging import get_logger
@@ -25,12 +21,12 @@ from app.core.logging import get_logger
 # Initialize logger
 logger = get_logger(__name__)
 
-def create_engine() -> AsyncEngine:
+def create_db_engine():
     """
-    Create async SQLAlchemy engine with proper configuration.
+    Create SQLAlchemy engine with proper configuration.
     
     Returns:
-        AsyncEngine: Configured SQLAlchemy engine
+        Engine: Configured SQLAlchemy engine
     """
     try:
         # Mask database password in logs
@@ -40,13 +36,14 @@ def create_engine() -> AsyncEngine:
         )
         logger.info(f"Creating database engine for {log_url}")
         
-        engine = create_async_engine(
+        engine = create_engine(
             str(settings.db.DATABASE_URL),
             echo=settings.app.DEBUG,
             pool_pre_ping=True,
             pool_size=settings.db.POSTGRES_MAX_POOL_SIZE,
             max_overflow=settings.db.POSTGRES_MIN_POOL_SIZE,
-            pool_recycle=settings.db.POSTGRES_POOL_RECYCLE
+            pool_recycle=settings.db.POSTGRES_POOL_RECYCLE,
+            future=True
         )
         
         logger.info(
@@ -69,35 +66,37 @@ def create_engine() -> AsyncEngine:
         raise
 
 # Create engine instance
-engine = create_engine()
+engine = create_db_engine()
 
-# Exported async sessionmaker for use in dependencies and imports
-async_session = async_sessionmaker(
-    engine,
-    class_=AsyncSession,
-    expire_on_commit=False
+# SessionLocal is a factory for new Session objects
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine,
+    future=True
 )
 
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
+def get_db() -> Generator[Session, None, None]:
     """
     FastAPI dependency for database sessions.
     
     Yields:
-        AsyncSession: Database session
+        Session: Database session
     
     Example:
         ```python
         @router.get("/items")
-        async def get_items(db: AsyncSession = Depends(get_db)):
-            items = await db.execute(select(Item))
-            return items.scalars().all()
+        def get_items(db: Session = Depends(get_db)):
+            items = db.query(Item).all()
+            return items
         ```
     """
-    session = async_session()
+    session = SessionLocal()
     
     try:
         logger.debug("Creating new database session")
         yield session
+        session.commit()
         
     except SQLAlchemyError as e:
         logger.error(
@@ -105,34 +104,33 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
             exc_info=True,
             extra={"error": str(e)}
         )
-        await session.rollback()
+        session.rollback()
         raise
         
     finally:
         logger.debug("Closing database session")
-        await session.close()
+        session.close()
 
-@contextlib.asynccontextmanager
-async def get_db_context() -> AsyncIterator[AsyncSession]:
+@contextlib.contextmanager
+def get_db_context() -> Iterator[Session]:
     """
     Context manager for database sessions.
     
     Yields:
-        AsyncSession: Database session
+        Session: Database session
     
     Example:
         ```python
-        async with get_db_context() as db:
-            result = await db.execute(select(User))
-            users = result.scalars().all()
+        with get_db_context() as db:
+            users = db.query(User).all()
         ```
     """
-    session = async_session()
+    session = SessionLocal()
     
     try:
         logger.debug("Creating new database session (context)")
         yield session
-        await session.commit()
+        session.commit()
         
     except SQLAlchemyError as e:
         logger.error(
@@ -140,14 +138,14 @@ async def get_db_context() -> AsyncIterator[AsyncSession]:
             exc_info=True,
             extra={"error": str(e)}
         )
-        await session.rollback()
+        session.rollback()
         raise
         
     finally:
         logger.debug("Closing database session (context)")
-        await session.close()
+        session.close()
 
-async def check_db_connection() -> bool:
+def check_db_connection() -> bool:
     """
     Check database connectivity.
     
@@ -157,14 +155,14 @@ async def check_db_connection() -> bool:
     Example:
         ```python
         @app.get("/health")
-        async def health_check():
-            db_healthy = await check_db_connection()
+        def health_check():
+            db_healthy = check_db_connection()
             return {"database": "healthy" if db_healthy else "unhealthy"}
         ```
     """
     try:
-        async with get_db_context() as db:
-            await db.execute("SELECT 1")
+        with get_db_context() as db:
+            db.execute("SELECT 1")
             logger.info("Database connection check successful")
             return True
             
@@ -176,4 +174,4 @@ async def check_db_connection() -> bool:
         )
         return False 
 
-__all__ = ["async_session", "engine", "get_db", "get_db_context", "check_db_connection"]
+__all__ = ["SessionLocal", "engine", "get_db", "get_db_context", "check_db_connection"]
