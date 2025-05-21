@@ -54,6 +54,10 @@ jobs:
       # ✅ Celery-related environment variables
       BROKER_URL: redis://localhost:6379/0
       RESULT_BACKEND: redis://localhost:6379/1
+
+      # ✅ Add sync and async SQLAlchemy URIs
+      SQLALCHEMY_DATABASE_URI: postgresql://test_user:test_pass@localhost:5432/test_db
+      ASYNC_SQLALCHEMY_DATABASE_URI: postgresql+asyncpg://test_user:test_pass@localhost:5432/test_db
       
       # ✅ Add Celery variables from secrets
       CELERY_BROKER_URL: ${{ secrets.CELERY_BROKER_URL }}

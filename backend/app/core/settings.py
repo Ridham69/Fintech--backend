@@ -79,7 +79,19 @@ class DatabaseConfig(BaseSettings):
     
     @property
     def DATABASE_URL(self) -> PostgresDsn:
-        """Construct PostgreSQL connection URL."""
+        """Construct PostgreSQL SYNC connection URL (for Alembic, sync SQLAlchemy)."""
+        return PostgresDsn.build(
+            scheme="postgresql",
+            username=self.POSTGRES_USER,
+            password=self.POSTGRES_PASSWORD.get_secret_value(),
+            host=self.POSTGRES_HOST,
+            port=self.POSTGRES_PORT,
+            path=self.POSTGRES_DB
+        )
+    
+    @property
+    def ASYNC_DATABASE_URL(self) -> PostgresDsn:
+        """Construct PostgreSQL ASYNC connection URL (for async SQLAlchemy)."""
         return PostgresDsn.build(
             scheme="postgresql+asyncpg",
             username=self.POSTGRES_USER,
