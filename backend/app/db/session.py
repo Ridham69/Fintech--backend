@@ -130,6 +130,9 @@ AsyncSessionLocal = async_sessionmaker(
     autocommit=False
 )
 
+# async_session is a simpler alias for AsyncSessionLocal
+async_session = AsyncSessionLocal
+
 async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
     """
     FastAPI dependency for async database sessions.
@@ -330,5 +333,5 @@ def check_db_connection() -> bool:
 
 __all__ = [
     "SessionLocal", "engine", "get_db", "get_db_context", "check_db_connection",
-    "AsyncSessionLocal", "async_engine", "get_async_db", "get_async_db_context", "check_async_db_connection"
+    "AsyncSessionLocal", "async_engine", "async_session", "get_async_db", "get_async_db_context", "check_async_db_connection"
 ]
