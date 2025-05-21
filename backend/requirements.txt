@@ -9,9 +9,9 @@ sqlalchemy==2.0.23
 alembic==1.12.1
 psycopg2-binary==2.9.9
 asyncpg==0.29.0
-redis==5.0.1
+redis==5.0.1  # Supports async operations natively
 
-# Authentication & Securitys
+# Authentication & Security
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 python-dotenv==1.0.0
@@ -30,7 +30,6 @@ aiohttp==3.9.1
 # Validation & Serialization
 pydantic==2.5.1
 pydantic-settings==2.1.0
-email-validator==2.1.0.post1
 
 # Monitoring & Logging
 prometheus-client==0.19.0
@@ -39,6 +38,7 @@ sentry-sdk[fastapi]==1.32.0
 opentelemetry-api==1.20.0
 opentelemetry-sdk==1.20.0
 opentelemetry-instrumentation-fastapi==0.41b0
+loguru>=0.7.0
 
 # Testing
 pytest==7.4.3
@@ -70,11 +70,4 @@ xlsxwriter==3.1.9
 
 # Image Processing (for KYC)
 Pillow==10.1.0
-python-magic==0.4.27 
-
-# Additional Dependencies
-asyncpg
-
-loguru>=0.7.0
-
-aioredis
+python-magic==0.4.27
