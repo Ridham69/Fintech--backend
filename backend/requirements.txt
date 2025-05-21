@@ -76,3 +76,5 @@ python-magic==0.4.27
 asyncpg
 
 loguru>=0.7.0
+
+aioredis
