@@ -362,3 +362,23 @@ def register_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(Exception, handle_generic_exception)
 
     logger.info("Exception handlers registered successfully") 
+
+# Alias for compatibility with code expecting a generic handler
+handle_exception = handle_generic_exception
+
+__all__ = [
+    "AppException",
+    "InvalidCredentialsException",
+    "PermissionDeniedException",
+    "ResourceNotFoundException",
+    "ConflictException",
+    "RateLimitException",
+    "ServiceUnavailableException",
+    "ValidationException",
+    "handle_app_exception",
+    "handle_validation_error",
+    "handle_http_exception",
+    "handle_generic_exception",
+    "handle_exception",
+    "register_exception_handlers",
+]
