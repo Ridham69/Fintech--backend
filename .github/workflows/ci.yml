@@ -127,4 +127,4 @@ jobs:
          DB_REDIS_HOST: localhost
          AUTH_JWT_SECRET_KEY: "dummy_jwt_secret_for_ci"
         run: |
-         ../venv/bin/python -m pytest app/tests
+          venv/bin/python -m pytest app/tests
