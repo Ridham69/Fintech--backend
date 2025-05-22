@@ -32,7 +32,7 @@ import prometheus_client
 from pythonjsonlogger import jsonlogger
 from typing_extensions import Protocol
 
-from app.core import settings
+from app.core.settings import settings  # FIX: import the settings instance, not the module
 
 # Context variables for request-scoped data
 correlation_id: ContextVar[str] = ContextVar('correlation_id', default='')
@@ -89,7 +89,7 @@ class ContextualJsonFormatter(jsonlogger.JsonFormatter):
         # Add basic context
         log_record['timestamp'] = datetime.utcfromtimestamp(record.created).isoformat()
         log_record['level'] = record.levelname
-        log_record['environment'] = settings.ENVIRONMENT
+        log_record['environment'] = settings.app.ENVIRONMENT  # FIX: use settings.app.ENVIRONMENT
         
         # Add call context
         frame = inspect.currentframe()
@@ -243,13 +243,13 @@ def setup_logging() -> None:
     }
 
     # Add file handler for non-development environments
-    if settings.ENVIRONMENT != "development":
+    if settings.app.ENVIRONMENT != "development":  # FIX: use settings.app.ENVIRONMENT
         log_dir = Path("logs")
         log_dir.mkdir(exist_ok=True)
         
         handlers['file'] = {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': log_dir / f"{settings.ENVIRONMENT}.log",
+            'filename': log_dir / f"{settings.app.ENVIRONMENT}.log",  # FIX: use settings.app.ENVIRONMENT
             'maxBytes': 10485760,  # 10MB
             'backupCount': 5,
             'formatter': 'json'
@@ -268,7 +268,7 @@ def setup_logging() -> None:
         },
         'handlers': handlers,
         'root': {
-            'level': settings.LOG_LEVEL,
+            'level': settings.logging.LEVEL,  # FIX: use settings.logging.LEVEL
             'handlers': list(handlers.keys())
         },
         'loggers': {
@@ -284,8 +284,8 @@ def setup_logging() -> None:
         "Logging configured",
         extra={
             'tags': ['startup', 'logging'],
-            'environment': settings.ENVIRONMENT,
-            'log_level': settings.LOG_LEVEL
+            'environment': settings.app.ENVIRONMENT,  # FIX: use settings.app.ENVIRONMENT
+            'log_level': settings.logging.LEVEL       # FIX: use settings.logging.LEVEL
         }
     )
 
@@ -344,4 +344,4 @@ def log_function_call(func: Callable) -> Callable:
             )
             raise
 
-    return wrapper 
+    return wrapper
