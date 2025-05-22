@@ -104,14 +104,13 @@ jobs:
           ls -la backend
           ls -la backend/app
 
-      - name: Install dependencies
-        working-directory: ./backend
+      - name: Install all requirements
         run: |
-          python -m venv venv
-          source venv/bin/activate
+          python -m venv backend/venv
+          source backend/venv/bin/activate
           pip install --upgrade pip
-          python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install -r backend/requirements.txt
           
       - name: Show installed packages (debug)
         working-directory: ./backend

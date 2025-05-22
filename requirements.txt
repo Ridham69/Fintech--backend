@@ -221,7 +221,7 @@ pywinpty==2.0.10
 PyYAML==6.0.2
 pyyaml_env_tag==1.1
 pyzmq==26.0.2
-redis>=4.2.0
+redis>=4.3.4
 referencing==0.36.2
 regex==2024.11.6
 reportlab==4.0.7
