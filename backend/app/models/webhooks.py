@@ -3,6 +3,8 @@ Webhook Models
 
 This module defines models for webhook events and processing.
 """
+from app.models.types import GUID
+from app.models.types import GUID
 
 from datetime import datetime
 from enum import Enum

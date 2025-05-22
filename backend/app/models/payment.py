@@ -10,6 +10,8 @@ payment processing through various payment providers. It includes:
 - Audit fields
 - Relationships to User and Transaction models
 """
+from app.models.types import GUID
+from app.models.types import GUID
 
 import uuid
 from datetime import datetime

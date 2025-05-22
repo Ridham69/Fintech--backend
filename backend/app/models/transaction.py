@@ -11,6 +11,8 @@ financial transactions in the system. It includes:
 - Audit fields
 - Relationships to User and other models
 """
+from app.models.types import GUID
+from app.models.types import GUID
 
 import uuid
 from datetime import datetime

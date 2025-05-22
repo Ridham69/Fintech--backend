@@ -3,6 +3,8 @@ Portfolio Rebalancing Models
 
 This module defines models for portfolio rebalancing operations and tracking.
 """
+from app.models.types import GUID
+from app.models.types import GUID
 
 from datetime import datetime
 from enum import Enum

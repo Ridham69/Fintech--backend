@@ -4,6 +4,8 @@ Investment models.
 This module defines the database models for investment funds,
 user investments, and investment transactions.
 """
+from app.models.types import GUID
+from app.models.types import GUID
 
 from datetime import datetime
 from decimal import Decimal

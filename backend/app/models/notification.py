@@ -5,6 +5,8 @@ This module defines the database models for user notifications,
 including in-app and email notifications with support for
 different categories and delivery channels.
 """
+from app.models.types import GUID
+from app.models.types import GUID
 
 from datetime import datetime
 from enum import Enum
@@ -22,7 +24,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint
 )
-from app.models.types import GUID as PGUUID
+from app.models.types import GUID
 from sqlalchemy.orm import Mapped, relationship
 
 from app.core.database import Base
@@ -157,4 +159,4 @@ class NotificationPreference(Base):
     )
     
     # Relationships
-    user = relationship("User", back_populates="notification_preferences") 
+    user = relationship("User", back_populates="notification_preferences")

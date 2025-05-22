@@ -4,6 +4,8 @@ User model with payment and transaction management capabilities.
 This module defines the User model with relationships to transactions
 and payment intents, along with helper methods for financial operations.
 """
+from app.models.types import GUID
+from app.models.types import GUID
 
 import uuid
 from datetime import datetime

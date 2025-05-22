@@ -3,6 +3,8 @@ Reconciliation Models
 
 This module defines models for reconciliation reports and tracking.
 """
+from app.models.types import GUID
+from app.models.types import GUID
 
 from datetime import datetime
 from enum import Enum

@@ -3,6 +3,8 @@ Linked Account Models
 
 This module defines models for linked external accounts and wallets.
 """
+from app.models.types import GUID
+from app.models.types import GUID
 
 from datetime import datetime
 from enum import Enum
