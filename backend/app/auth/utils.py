@@ -14,7 +14,7 @@ from jose import jwt, JWTError
 import redis.asyncio as redis
 import pyotp
 
-from app.core.config import settings
+from app.core.settings import settings
 from app.models.user import User, UserRole
 from .exceptions import (
     TokenExpiredError,
@@ -289,4 +289,4 @@ def generate_csrf_token() -> str:
 
 def verify_csrf_token(token: str, session_token: str) -> bool:
     """Verify CSRF token using constant-time comparison."""
-    return hmac.compare_digest(token, session_token) 
+    return hmac.compare_digest(token, session_token)

@@ -43,14 +43,21 @@ jobs:
       DB_POSTGRES_PASSWORD: test_pass
       DB_POSTGRES_DB: test_db
       DB_REDIS_HOST: localhost
-
+      
+      
       
       # ✅ Add SECRET_KEY for Pydantic Settings
       SECRET_KEY: "dummy_secret_for_ci"
 
       # ✅ Add AUTH_JWT_SECRET_KEY for AuthConfig
       AUTH_JWT_SECRET_KEY: "dummy_jwt_secret_for_ci"
-
+      
+      # ✅ Add ARGON2 settings for AuthConfig (nested override)
+      AUTH__ARGON2_TIME_COST: 2
+      AUTH__ARGON2_MEMORY_COST: 102400
+      AUTH__ARGON2_PARALLELISM: 8
+      AUTH__JWT_ALGORITHM: "HS256"
+      
       # ✅ Celery-related environment variables
       BROKER_URL: redis://localhost:6379/0
       RESULT_BACKEND: redis://localhost:6379/1
@@ -114,7 +121,7 @@ jobs:
       - name: Run tests
         working-directory: ./backend
         env:
-          PYTHONPATH: ${{ github.workspace }}/backend
+          PYTHONPATH: ${{ github.workspace }}/backend:${{ github.workspace }}/backend/app
           DB_POSTGRES_HOST: localhost
           DB_POSTGRES_USER: test_user
           DB_POSTGRES_PASSWORD: test_pass
