@@ -106,29 +106,25 @@ jobs:
 
       - name: Install all requirements
         run: |
-         python -m venv backend/venv
-         source backend/venv/bin/activate
-         pip install --upgrade pip
-         pip install -r requirements.txt
-         pip install -r backend/requirements.txt
-         pip install --upgrade 'redis>=4.5.5,<5.0.0'
-         
+          python -m venv backend/venv
+          backend/venv/bin/pip install --upgrade pip
+          backend/venv/bin/pip install -r requirements.txt
+          backend/venv/bin/pip install -r backend/requirements.txt
+           backend/venv/bin/pip install --upgrade 'redis>=4.5.5,<5.0.0'
+
       - name: Show installed packages (debug)
         run: |
-          source backend/venv/bin/activate
-          pip show redis
-       
-          
+         backend/venv/bin/pip show redis
+
       - name: Run tests
         working-directory: ./backend
         env:
-          PYTHONPATH: ${{ github.workspace }}/backend:${{ github.workspace }}/backend/app
-          DB_POSTGRES_HOST: localhost
-          DB_POSTGRES_USER: test_user
-          DB_POSTGRES_PASSWORD: test_pass
-          DB_POSTGRES_DB: test_db
-          DB_REDIS_HOST: localhost
-          AUTH_JWT_SECRET_KEY: "dummy_jwt_secret_for_ci"
+         PYTHONPATH: ${{ github.workspace }}/backend:${{ github.workspace }}/backend/app
+         DB_POSTGRES_HOST: localhost
+         DB_POSTGRES_USER: test_user
+         DB_POSTGRES_PASSWORD: test_pass
+         DB_POSTGRES_DB: test_db
+         DB_REDIS_HOST: localhost
+         AUTH_JWT_SECRET_KEY: "dummy_jwt_secret_for_ci"
         run: |
-          source venv/bin/activate
-          pytest app/tests
+         ../venv/bin/python -m pytest app/tests
