@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import Optional
 
 from app.core.logging import get_logger
-from app.email import email_service
+from app.mailer import email_service
 from app.models.user import User
 from app.schemas.user import UserCreate
 

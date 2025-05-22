@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import KYCError
 from app.core.logging import get_logger
-from app.email import email_service
+from app.mailer import email_service
 from app.models.user import User
 from app.schemas.kyc import KYCStatus
 from app.services.auth_service import get_user_by_id
