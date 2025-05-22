@@ -22,7 +22,7 @@ def upgrade() -> None:
     # Create document_versions table
     op.create_table(
         'document_versions',
-        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True, server_default=sa.text('gen_random_uuid()')),
+        sa.Column('id', postgresql.GUID(), primary_key=True, server_default=sa.text('gen_random_uuid()')),
         sa.Column('type', sa.Enum('terms', 'privacy', 'kyc_disclosure', 'marketing', 'cookies', name='documenttype'), nullable=False, index=True),
         sa.Column('version', sa.String(50), nullable=False),
         sa.Column('hash', sa.String(64), nullable=False, index=True),
@@ -34,9 +34,9 @@ def upgrade() -> None:
     # Create user_consents table
     op.create_table(
         'user_consents',
-        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True, server_default=sa.text('gen_random_uuid()')),
-        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False, index=True),
-        sa.Column('document_id', postgresql.UUID(as_uuid=True), nullable=False, index=True),
+        sa.Column('id', postgresql.GUID(), primary_key=True, server_default=sa.text('gen_random_uuid()')),
+        sa.Column('user_id', postgresql.GUID(), nullable=False, index=True),
+        sa.Column('document_id', postgresql.GUID(), nullable=False, index=True),
         sa.Column('accepted_at', sa.DateTime(timezone=True), nullable=False, server_default=sa.text('CURRENT_TIMESTAMP'), index=True),
         sa.Column('ip_address', sa.String(45), nullable=False),
         sa.Column('user_agent', sa.String(500), nullable=False),

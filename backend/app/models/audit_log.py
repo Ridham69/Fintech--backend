@@ -10,7 +10,7 @@ from typing import Any, Dict, Optional
 from uuid import UUID
 
 from sqlalchemy import String, DateTime, JSON
-from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSONB
+from app.models.types import GUID as PGUUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base_class import Base

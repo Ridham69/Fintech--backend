@@ -21,8 +21,8 @@ def upgrade() -> None:
     """Create audit_logs table."""
     op.create_table(
         'audit_logs',
-        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True, server_default=sa.text('gen_random_uuid()')),
-        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=True, index=True),
+        sa.Column('id', postgresql.GUID(), primary_key=True, server_default=sa.text('gen_random_uuid()')),
+        sa.Column('user_id', postgresql.GUID(), nullable=True, index=True),
         sa.Column('action', sa.String(100), nullable=False, index=True),
         sa.Column('target_table', sa.String(100), nullable=False, index=True),
         sa.Column('target_id', sa.String(100), nullable=False, index=True),

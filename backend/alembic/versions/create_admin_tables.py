@@ -47,8 +47,8 @@ def upgrade() -> None:
     # Create admin_users table
     op.create_table(
         'admin_users',
-        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True, server_default=sa.text('gen_random_uuid()')),
-        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False, unique=True, index=True),
+        sa.Column('id', postgresql.GUID(), primary_key=True, server_default=sa.text('gen_random_uuid()')),
+        sa.Column('user_id', postgresql.GUID(), nullable=False, unique=True, index=True),
         sa.Column('roles', postgresql.ARRAY(sa.Enum('super_admin', 'compliance', 'support', 'operations', name='adminrole')), nullable=False),
         sa.Column('scopes', postgresql.ARRAY(sa.Enum(
             'admin:read:users', 'admin:read:kyc', 'admin:read:transactions',
@@ -66,11 +66,11 @@ def upgrade() -> None:
     # Create admin_audit_logs table
     op.create_table(
         'admin_audit_logs',
-        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True, server_default=sa.text('gen_random_uuid()')),
-        sa.Column('admin_id', postgresql.UUID(as_uuid=True), nullable=False, index=True),
+        sa.Column('id', postgresql.GUID(), primary_key=True, server_default=sa.text('gen_random_uuid()')),
+        sa.Column('admin_id', postgresql.GUID(), nullable=False, index=True),
         sa.Column('action', sa.String(100), nullable=False),
         sa.Column('resource_type', sa.String(50), nullable=False),
-        sa.Column('resource_id', postgresql.UUID(as_uuid=True), index=True),
+        sa.Column('resource_id', postgresql.GUID(), index=True),
         sa.Column('details', sa.String()),
         sa.Column('ip_address', sa.String(45), nullable=False),
         sa.Column('user_agent', sa.String(500), nullable=False),

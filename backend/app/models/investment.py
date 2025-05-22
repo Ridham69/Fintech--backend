@@ -20,7 +20,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint
 )
-from sqlalchemy.dialects.postgresql import UUID as PGUUID
+from app.models.types import GUID as PGUUID
 from sqlalchemy.orm import Mapped, relationship
 
 from app.core.database import Base
@@ -33,7 +33,7 @@ class InvestmentFund(Base):
     __tablename__ = "investment_funds"
     
     id: Mapped[UUID] = Column(
-        PGUUID(as_uuid=True),
+        PGGUID(),
         primary_key=True,
         default=uuid4
     )
@@ -57,17 +57,17 @@ class UserInvestment(Base):
     __tablename__ = "user_investments"
     
     id: Mapped[UUID] = Column(
-        PGUUID(as_uuid=True),
+        PGGUID(),
         primary_key=True,
         default=uuid4
     )
     user_id: Mapped[UUID] = Column(
-        PGUUID(as_uuid=True),
+        PGGUID(),
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False
     )
     investment_fund_id: Mapped[UUID] = Column(
-        PGUUID(as_uuid=True),
+        PGGUID(),
         ForeignKey("investment_funds.id", ondelete="CASCADE"),
         nullable=False
     )
@@ -82,7 +82,7 @@ class UserInvestment(Base):
         default=0
     )
     last_transaction_id: Mapped[Optional[UUID]] = Column(
-        PGUUID(as_uuid=True),
+        PGGUID(),
         ForeignKey("transactions.id")
     )
     created_at: Mapped[datetime] = Column(
@@ -116,17 +116,17 @@ class InvestmentTransaction(Base):
     __tablename__ = "investment_transactions"
     
     id: Mapped[UUID] = Column(
-        PGUUID(as_uuid=True),
+        PGGUID(),
         primary_key=True,
         default=uuid4
     )
     user_id: Mapped[UUID] = Column(
-        PGUUID(as_uuid=True),
+        PGGUID(),
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False
     )
     investment_fund_id: Mapped[UUID] = Column(
-        PGUUID(as_uuid=True),
+        PGGUID(),
         ForeignKey("investment_funds.id", ondelete="CASCADE"),
         nullable=False
     )
@@ -147,7 +147,7 @@ class InvestmentTransaction(Base):
         nullable=False
     )
     related_txn_id: Mapped[Optional[UUID]] = Column(
-        PGUUID(as_uuid=True),
+        PGGUID(),
         ForeignKey("transactions.id")
     )
     created_at: Mapped[datetime] = Column(

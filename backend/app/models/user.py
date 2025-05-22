@@ -12,7 +12,7 @@ from typing import List, Optional
 import enum
 
 from sqlalchemy import Column, String, Boolean, DateTime, Enum, func
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from app.models.types import GUID, JSONB
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -44,7 +44,7 @@ class User(Base, AuditMixin):
     __tablename__ = "users"
     
     # Primary key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(GUID(), primary_key=True, default=uuid.uuid4)
     
     # Core fields
     email = Column(String(255), unique=True, nullable=False, index=True)

@@ -32,8 +32,8 @@ def upgrade() -> None:
     # Create linked_accounts table
     op.create_table(
         'linked_accounts',
-        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True, server_default=sa.text('gen_random_uuid()')),
-        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False, index=True),
+        sa.Column('id', postgresql.GUID(), primary_key=True, server_default=sa.text('gen_random_uuid()')),
+        sa.Column('user_id', postgresql.GUID(), nullable=False, index=True),
         sa.Column('account_type', sa.Enum('bank', 'upi', 'card', 'wallet', name='accounttype'), nullable=False),
         sa.Column('provider', sa.String(100), nullable=False),
         sa.Column('account_number_masked', sa.String(50), nullable=False),

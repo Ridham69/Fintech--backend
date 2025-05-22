@@ -10,7 +10,7 @@ from typing import Optional
 from uuid import UUID, uuid4
 
 from sqlalchemy import DateTime, Enum as SQLEnum, ForeignKey, JSON, String, Text
-from sqlalchemy.dialects.postgresql import UUID as PGUUID
+from app.models.types import GUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base_class import Base
@@ -30,7 +30,7 @@ class ReconciliationReport(Base):
     __tablename__ = "reconciliation_reports"
     
     id: Mapped[UUID] = mapped_column(
-        PGUUID(as_uuid=True),
+        PGGUID(),
         primary_key=True,
         default=uuid4,
         index=True

@@ -20,7 +20,7 @@ from sqlalchemy import (
     Column, String, DateTime, Enum, ForeignKey, Boolean,
     Numeric, Index, CheckConstraint, event, JSON
 )
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from app.models.types import GUID, JSONB
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -83,10 +83,10 @@ class PaymentIntent(Base, AuditMixin):
     __tablename__ = "payment_intents"
     
     # Primary key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(GUID(), primary_key=True, default=uuid.uuid4)
     
     # Core fields
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    user_id = Column(GUID(), ForeignKey("users.id"), nullable=False)
     amount = Column(Numeric(precision=18, scale=2), nullable=False)
     currency = Column(String(3), default="INR", nullable=False)
     

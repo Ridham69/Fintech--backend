@@ -53,8 +53,8 @@ def upgrade() -> None:
     # Create notifications table
     op.create_table(
         'notifications',
-        sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column('id', postgresql.GUID(), nullable=False),
+        sa.Column('user_id', postgresql.GUID(), nullable=False),
         sa.Column('title', sa.String(255), nullable=False),
         sa.Column('message', sa.Text(), nullable=False),
         sa.Column('category', sa.Enum('SYSTEM', 'TRANSACTIONAL', 'PROMOTIONAL', 'SECURITY', 'INVESTMENT', name='notification_category'), nullable=False, server_default='SYSTEM'),
@@ -72,8 +72,8 @@ def upgrade() -> None:
     # Create notification preferences table
     op.create_table(
         'notification_preferences',
-        sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column('id', postgresql.GUID(), nullable=False),
+        sa.Column('user_id', postgresql.GUID(), nullable=False),
         sa.Column('email_enabled', sa.Boolean(), nullable=False, server_default='true'),
         sa.Column('sms_enabled', sa.Boolean(), nullable=False, server_default='false'),
         sa.Column('push_enabled', sa.Boolean(), nullable=False, server_default='true'),
