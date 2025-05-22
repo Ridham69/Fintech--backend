@@ -1,7 +1,6 @@
 from sqlalchemy import Column, String
 import uuid
 from sqlalchemy.types import TypeDecorator, CHAR
-from app.models.types import GUID as PG_UUID
 
 class GUID(TypeDecorator):
     """Platform-independent GUID type.
@@ -12,7 +11,8 @@ class GUID(TypeDecorator):
 
     def load_dialect_impl(self, dialect):
         if dialect.name == 'postgresql':
-            return dialect.type_descriptor(PG_GUID())
+            from sqlalchemy.dialects.postgresql import UUID as PG_UUID
+            return dialect.type_descriptor(PG_UUID(as_uuid=True))
         else:
             return dialect.type_descriptor(CHAR(36))
 
