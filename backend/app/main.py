@@ -22,7 +22,7 @@ import sentry_sdk
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from prometheus_client import Counter, Histogram, make_asgi_app
+
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
@@ -33,7 +33,12 @@ from fastapi.openapi.docs import (
 )
 from fastapi.openapi.utils import get_openapi
 from redis.asyncio import Redis
-
+from app.monitoring.prometheus import (
+    get_requests_total,
+    get_requests_in_progress,
+    get_requests_latency,
+    setup_metrics,
+)
 from app.api.v1.routes import auth, kyc, payment, investment
 from app.core import settings
 from app.core.error_handler import handle_exception
@@ -52,29 +57,11 @@ from app.services.notification import NotificationService
 logger = logging.getLogger(__name__)
 
 # Define Prometheus metrics
-REQUESTS_TOTAL = Counter(
-    "http_requests_total",
-    "Total HTTP requests",
-    ["method", "endpoint", "status"]
-)
-
-REQUESTS_IN_PROGRESS = prometheus_client.Gauge(
-    "http_requests_in_progress",
-    "Number of HTTP requests in progress"
-)
-
-REQUEST_LATENCY = Histogram(
-    "http_request_duration_seconds",
-    "HTTP request duration in seconds",
-    ["method", "endpoint"],
-    buckets=[0.1, 0.5, 1.0, 2.0, 5.0, 10.0]  # Define appropriate latency buckets
-)
-
 class PrometheusMiddleware(BaseHTTPMiddleware):
     """Middleware to collect Prometheus metrics for each request."""
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
-        REQUESTS_IN_PROGRESS.inc()
+        get_requests_in_progress().inc()
         start_time = time.time()
         
         try:
@@ -86,16 +73,19 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
             raise exc
         finally:
             duration = time.time() - start_time
-            REQUESTS_TOTAL.labels(
+            get_requests_total().labels(
                 method=request.method,
                 endpoint=request.url.path,
                 status=status_code
             ).inc()
-            REQUEST_LATENCY.labels(
+            get_requests_latency().labels(
                 method=request.method,
                 endpoint=request.url.path
             ).observe(duration)
-            REQUESTS_IN_PROGRESS.dec()
+            get_requests_in_progress().dec()
+
+
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator:
