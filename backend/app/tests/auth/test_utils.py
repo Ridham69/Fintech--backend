@@ -90,7 +90,7 @@ def test_token_creation_and_verification(test_user):
     # Verify token can be decoded
     decoded = jwt.decode(
         token,
-        "test_secret",  # Replace with settings.JWT_SECRET_KEY in real tests
+        "test_secret",  # Replace with settings.auth.JWT_SECRET_KEY in real tests
         algorithms=["HS256"]
     )
     assert decoded["sub"] == str(test_user.id)

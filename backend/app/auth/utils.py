@@ -67,21 +67,28 @@ def hash_password(password: str) -> str:
         raise RuntimeError("Failed to hash password") from e
 
 
-def verify_password(password: str, hashed_password: str) -> bool:
+def verify_password(plain_password: str, hashed_password: str) -> tuple[bool, bool]:
     """
-    Verify password against hash.
-    
-    Args:
-        password: Plain text password
-        hashed_password: Hashed password
-        
-    Returns:
-        bool: True if password is valid, False otherwise
+    Verify a password against a hash.
+    Returns (is_valid, needs_rehash)
     """
     try:
-        return ph.verify(hashed_password, password)
-    except VerifyMismatchError:
-        return False
+        is_valid = ph.verify(hashed_password, plain_password)
+        needs_rehash = ph.check_needs_rehash(hashed_password)
+        return is_valid, needs_rehash
+    except VerificationError:
+        # Optionally, fallback to bcrypt if you support it
+        try:
+            import bcrypt
+            is_valid = bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
+            # If valid with bcrypt, you may want to rehash with Argon2
+            return is_valid, is_valid  # needs_rehash = is_valid
+        except Exception as e:
+            logger.error("[AUTH] Password verification failed", exc_info=e)
+            return False, False
+    except Exception as e:
+        logger.error("[AUTH] Unexpected error during password verification", exc_info=e)
+        return False, False
 
 
 def create_token_payload(
@@ -131,7 +138,7 @@ def create_token(payload: Dict[str, Any]) -> str:
     """
     return jwt.encode(
         payload,
-        settings.JWT_SECRET_KEY,
+        settings.auth.JWT_SECRET_KEY,
         algorithm=settings.JWT_ALGORITHM
     )
 
@@ -158,7 +165,7 @@ async def verify_token(
     try:
         payload = jwt.decode(
             token,
-            settings.JWT_SECRET_KEY,
+            settings.auth.JWT_SECRET_KEY,
             algorithms=[settings.JWT_ALGORITHM]
         )
         

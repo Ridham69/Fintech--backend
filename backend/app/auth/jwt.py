@@ -67,7 +67,7 @@ def create_token_pair(
             "jti": access_jti,
             "type": "access"
         },
-        settings.JWT_SECRET_KEY,
+        settings.auth.JWT_SECRET_KEY,
         algorithm=settings.JWT_ALGORITHM
     )
     
@@ -79,7 +79,7 @@ def create_token_pair(
             "jti": refresh_jti,
             "type": "refresh"
         },
-        settings.JWT_SECRET_KEY,
+        settings.auth.JWT_SECRET_KEY,
         algorithm=settings.JWT_ALGORITHM
     )
     
@@ -105,7 +105,7 @@ async def verify_token(token: str, token_type: str = "access") -> TokenPayload:
     try:
         payload = jwt.decode(
             token,
-            settings.JWT_SECRET_KEY,
+            settings.auth.JWT_SECRET_KEY,
             algorithms=[settings.JWT_ALGORITHM]
         )
         token_data = TokenPayload(**payload)
