@@ -40,7 +40,7 @@ from app.monitoring.prometheus import (
     setup_metrics,
 )
 from app.api.v1.routes import auth, kyc, payment, investment
-from app.core import settings
+from app.core.settings import settings
 from app.core.error_handler import handle_exception
 from app.core.logging import setup_logging
 from app.core.middleware import RequestLoggingMiddleware, RequestValidationMiddleware, CorrelationIDMiddleware, SecurityHeadersMiddleware
