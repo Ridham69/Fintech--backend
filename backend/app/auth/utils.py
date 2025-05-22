@@ -139,7 +139,7 @@ def create_token(payload: Dict[str, Any]) -> str:
     return jwt.encode(
         payload,
         settings.auth.JWT_SECRET_KEY,
-        algorithm=settings.JWT_ALGORITHM
+        algorithm=settings.auth.JWT_ALGORITHM
     )
 
 
@@ -166,7 +166,7 @@ async def verify_token(
         payload = jwt.decode(
             token,
             settings.auth.JWT_SECRET_KEY,
-            algorithms=[settings.JWT_ALGORITHM]
+            algorithms=[settings.auth.JWT_ALGORITHM]
         )
         
         # Verify token type

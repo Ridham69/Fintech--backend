@@ -308,7 +308,7 @@ def create_application() -> FastAPI:
                 "status": "healthy",
                 "timestamp": time.time(),
                 "version": settings.VERSION,
-                "environment": settings.ENVIRONMENT
+                "environment": settings.app.ENVIRONMENT
             }
         except Exception as e:
             logger.error("Health check failed", exc_info=True)
@@ -338,10 +338,10 @@ if __name__ == "__main__":
         "main:app",
         host="0.0.0.0",
         port=8000,
-        reload=settings.ENVIRONMENT == "development",
+        reload=settings.app.ENVIRONMENT == "development",
         log_config=None,  # Use our custom logging config
-        ssl_keyfile=settings.SSL_KEYFILE if settings.ENVIRONMENT == "production" else None,
-        ssl_certfile=settings.SSL_CERTFILE if settings.ENVIRONMENT == "production" else None,
+        ssl_keyfile=settings.SSL_KEYFILE if settings.app.ENVIRONMENT == "production" else None,
+        ssl_certfile=settings.SSL_CERTFILE if settings.app.ENVIRONMENT == "production" else None,
         proxy_headers=True,
         forwarded_allow_ips="*"
     )

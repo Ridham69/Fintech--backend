@@ -209,7 +209,7 @@ async def handle_app_exception(
             "method": request.method,
             "extra": exc.extra
         },
-        exc_info=exc if settings.ENVIRONMENT == "development" else None
+        exc_info=exc if settings.app.ENVIRONMENT == "development" else None
     )
 
     # Track metric
@@ -225,7 +225,7 @@ async def handle_app_exception(
         status_code=exc.status_code,
         message=exc.message,
         error_code=exc.error_code,
-        details=exc.extra if settings.ENVIRONMENT == "development" else None
+        details=exc.extra if settings.app.ENVIRONMENT == "development" else None
     )
 
     return JSONResponse(
@@ -270,7 +270,7 @@ async def handle_validation_error(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         message="Request validation failed",
         error_code="VALIDATION_ERROR",
-        details={"errors": error_details} if settings.ENVIRONMENT == "development" else None
+        details={"errors": error_details} if settings.app.ENVIRONMENT == "development" else None
     )
 
     return JSONResponse(
@@ -339,7 +339,7 @@ async def handle_generic_exception(
     error_response = create_error_response(
         request=request,
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        message="An unexpected error occurred" if settings.ENVIRONMENT != "development" else str(exc),
+        message="An unexpected error occurred" if settings.app.ENVIRONMENT != "development" else str(exc),
         error_code="INTERNAL_SERVER_ERROR"
     )
 

@@ -68,7 +68,7 @@ def create_token_pair(
             "type": "access"
         },
         settings.auth.JWT_SECRET_KEY,
-        algorithm=settings.JWT_ALGORITHM
+        algorithm=settings.auth.JWT_ALGORITHM
     )
     
     # Refresh token - long lived
@@ -80,7 +80,7 @@ def create_token_pair(
             "type": "refresh"
         },
         settings.auth.JWT_SECRET_KEY,
-        algorithm=settings.JWT_ALGORITHM
+        algorithm=settings.auth.JWT_ALGORITHM
     )
     
     logger.info(f"[AUTH] Generated token pair for user {user_id}")
@@ -106,7 +106,7 @@ async def verify_token(token: str, token_type: str = "access") -> TokenPayload:
         payload = jwt.decode(
             token,
             settings.auth.JWT_SECRET_KEY,
-            algorithms=[settings.JWT_ALGORITHM]
+            algorithms=[settings.auth.JWT_ALGORITHM]
         )
         token_data = TokenPayload(**payload)
         
