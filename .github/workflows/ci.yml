@@ -111,7 +111,8 @@ jobs:
          pip install --upgrade pip
          pip install -r requirements.txt
          pip install -r backend/requirements.txt
-          
+         pip install --upgrade 'redis>=4.5.5,<5.0.0'
+         
       - name: Show installed packages (debug)
         run: |
           source backend/venv/bin/activate
