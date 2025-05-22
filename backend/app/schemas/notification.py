@@ -70,7 +70,7 @@ class NotificationCreate(NotificationBase):
     template_id: Optional[str] = None
     template_params: Optional[dict] = None
     email_to: Optional[EmailStr] = None
-    sms_to: Optional[str] = Field(None, pattern="^\+?[1-9]\d{1,14}$")
+    sms_to: Optional[str] = Field(None, pattern=r"^\+?[1-9]\d{1,14}$")
     push_token: Optional[str] = None
     action_url: Optional[HttpUrl] = None
     
@@ -218,4 +218,4 @@ class NotificationPreferenceResponse(NotificationPreferenceBase):
     created_at: datetime
     updated_at: datetime
     
-    model_config = ConfigDict(from_attributes=True) 
+    model_config = ConfigDict(from_attributes=True)

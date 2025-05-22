@@ -9,6 +9,7 @@ import uuid
 from datetime import datetime
 from decimal import Decimal
 from typing import List, Optional
+import enum
 
 from sqlalchemy import Column, String, Boolean, DateTime, Enum, func
 from sqlalchemy.dialects.postgresql import UUID, JSONB
@@ -17,6 +18,11 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from app.core.database import Base
 from app.models.audit_mixin import AuditMixin
+
+class UserRole(enum.Enum):  # or whatever your base class is
+    ADMIN = "admin"
+    USER = "user"
+    # ...other roles...
 
 class User(Base, AuditMixin):
     """
@@ -199,4 +205,4 @@ class User(Base, AuditMixin):
             f"email={self.email}, "
             f"full_name={self.full_name}, "
             f"balance={self.total_balance})>"
-        ) 
+        )
