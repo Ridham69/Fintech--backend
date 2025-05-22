@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String
 import uuid
-from sqlalchemy.types import TypeDecorator, CHAR
+import json
+from sqlalchemy.types import TypeDecorator, CHAR, TEXT
 
 
 class GUID(TypeDecorator):
@@ -29,3 +30,28 @@ class GUID(TypeDecorator):
         if value is None:
             return value
         return uuid.UUID(value)
+
+
+class JSONB(TypeDecorator):
+    """Platform-independent JSONB type.
+
+    Uses PostgreSQL's JSONB type, otherwise stores as TEXT with JSON serialization.
+    """
+    impl = TEXT
+
+    def load_dialect_impl(self, dialect):
+        if dialect.name == 'postgresql':
+            from sqlalchemy.dialects.postgresql import JSONB as PG_JSONB
+            return dialect.type_descriptor(PG_JSONB())
+        else:
+            return dialect.type_descriptor(TEXT())
+
+    def process_bind_param(self, value, dialect):
+        if value is not None:
+            return json.dumps(value)
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value is not None:
+            return json.loads(value)
+        return value
