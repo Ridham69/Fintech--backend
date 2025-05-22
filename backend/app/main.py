@@ -150,8 +150,8 @@ def create_application() -> FastAPI:
     """
     # Initialize Sentry with all integrations
     sentry_sdk.init(
-        dsn=settings.SENTRY_DSN,
-        environment=settings.ENVIRONMENT,
+        dsn=settings.logging.SENTRY_DSN,  # <-- FIXED: use the nested logging config
+        environment=settings.app.ENVIRONMENT,
         traces_sample_rate=1.0,
         integrations=[
             FastApiIntegration(
@@ -343,9 +343,8 @@ if __name__ == "__main__":
         ssl_certfile=settings.SSL_CERTFILE if settings.ENVIRONMENT == "production" else None,
         proxy_headers=True,
         forwarded_allow_ips="*"
-    ) 
+    )
 
 
 
 
-    
