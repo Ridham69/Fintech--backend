@@ -130,4 +130,4 @@ jobs:
           AUTH_JWT_SECRET_KEY: "dummy_jwt_secret_for_ci"
         run: |
           source backend/venv/bin/activate
-          pytest app/tests
+          pytest backend/app/tests
