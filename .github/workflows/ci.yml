@@ -122,6 +122,16 @@ jobs:
         working-directory: ./backend
         run: |
          venv/bin/python -c "import redis.asyncio; print(redis.__version__)"
+      
+      - name: Debug Python and pytest
+        working-directory: ./backend
+        run: |
+          venv/bin/python --version
+          venv/bin/python -m pip show redis
+          venv/bin/python -m pip show pytest
+          venv/bin/python -m pytest --version
+          which pytest || true
+
 
       - name: Run tests
         working-directory: ./backend
