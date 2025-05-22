@@ -106,11 +106,11 @@ jobs:
 
       - name: Install all requirements
         run: |
-          python -m venv backend/venv
-          source backend/venv/bin/activate
-          pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r backend/requirements.txt
+         python -m venv backend/venv
+         source backend/venv/bin/activate
+         pip install --upgrade pip
+         pip install -r requirements.txt
+         pip install -r backend/requirements.txt
           
       - name: Show installed packages (debug)
         working-directory: ./backend
