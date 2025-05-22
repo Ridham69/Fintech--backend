@@ -109,18 +109,17 @@ jobs:
          python -m venv backend/venv
          source backend/venv/bin/activate
          pip install --upgrade pip
-         
-         
+         pip install -r requirements.txt
          pip install -r backend/requirements.txt
           
       - name: Show installed packages (debug)
-        working-directory: ./backend
         run: |
-          source venv/bin/activate
+          source backend/venv/bin/activate
           pip list
+       
           
       - name: Run tests
-        working-directory: ./backend
+        
         env:
           PYTHONPATH: ${{ github.workspace }}/backend:${{ github.workspace }}/backend/app
           DB_POSTGRES_HOST: localhost
@@ -130,5 +129,5 @@ jobs:
           DB_REDIS_HOST: localhost
           AUTH_JWT_SECRET_KEY: "dummy_jwt_secret_for_ci"
         run: |
-          source venv/bin/activate
+          source backend/venv/bin/activate
           pytest app/tests
