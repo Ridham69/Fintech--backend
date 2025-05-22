@@ -48,7 +48,7 @@ from app.core.middleware import RequestLoggingMiddleware, RequestValidationMiddl
 from app.db.session import SessionLocal, engine
 from app.monitoring.opentelemetry import setup_telemetry
 from app.monitoring.prometheus import setup_metrics
-from app.redis.client import init_redis_pool
+from app.redis_new.client import init_redis_pool
 from app.middlewares.audit_context import AuditContextMiddleware
 from app.middleware.rate_limiter import RateLimiterMiddleware
 from app.services.abuse_logger import AbuseLogger
