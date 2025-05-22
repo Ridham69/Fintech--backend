@@ -29,13 +29,13 @@ class LinkedAccount(Base):
     __tablename__ = "linked_accounts"
     
     id: Mapped[UUID] = mapped_column(
-        PGGUID(),
+        GUID(),
         primary_key=True,
         default=uuid4,
         index=True
     )
     user_id: Mapped[UUID] = mapped_column(
-        PGGUID(),
+        GUID(),
         ForeignKey("users.id", ondelete="CASCADE"),
         index=True
     )

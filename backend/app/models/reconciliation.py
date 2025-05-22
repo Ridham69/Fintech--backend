@@ -30,7 +30,7 @@ class ReconciliationReport(Base):
     __tablename__ = "reconciliation_reports"
     
     id: Mapped[UUID] = mapped_column(
-        PGGUID(),
+        GUID(),
         primary_key=True,
         default=uuid4,
         index=True

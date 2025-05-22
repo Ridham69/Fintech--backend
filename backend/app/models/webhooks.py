@@ -30,7 +30,7 @@ class WebhookEvent(Base):
     __tablename__ = "webhook_events"
     
     id: Mapped[UUID] = mapped_column(
-        PGGUID(),
+        GUID(),
         primary_key=True,
         default=uuid4,
         index=True

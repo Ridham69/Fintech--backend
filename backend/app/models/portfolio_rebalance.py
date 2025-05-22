@@ -39,13 +39,13 @@ class RebalanceLog(Base):
     __tablename__ = "rebalance_logs"
     
     id: Mapped[UUID] = mapped_column(
-        PGGUID(),
+        GUID(),
         primary_key=True,
         default=uuid4,
         index=True
     )
     user_id: Mapped[UUID] = mapped_column(
-        PGGUID(),
+        GUID(),
         ForeignKey("users.id"),
         nullable=False,
         index=True

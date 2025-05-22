@@ -59,12 +59,12 @@ class Notification(Base):
     __tablename__ = "notifications"
     
     id: Mapped[UUID] = Column(
-        PGGUID(),
+        GUID(),
         primary_key=True,
         default=uuid4
     )
     user_id: Mapped[UUID] = Column(
-        PGGUID(),
+        GUID(),
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False
     )
@@ -118,12 +118,12 @@ class NotificationPreference(Base):
     __tablename__ = "notification_preferences"
     
     id: Mapped[UUID] = Column(
-        PGGUID(),
+        GUID(),
         primary_key=True,
         default=uuid4
     )
     user_id: Mapped[UUID] = Column(
-        PGGUID(),
+        GUID(),
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         unique=True
