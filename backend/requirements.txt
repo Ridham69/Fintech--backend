@@ -9,7 +9,8 @@ sqlalchemy==2.0.23
 alembic==1.12.1
 psycopg2-binary==2.9.9
 asyncpg==0.29.0
-redis==5.0.1  # Supports async operations natively
+ redis>=4.2.0 # Supports async operations natively
+  # Supports async operations natively
 
 # Authentication & Security
 python-jose[cryptography]==3.3.0
@@ -73,4 +74,3 @@ Pillow==10.1.0
 python-magic==0.4.27
 
 pyotp
-redis>=4.2.0
