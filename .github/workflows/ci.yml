@@ -116,11 +116,11 @@ jobs:
       - name: Show installed packages (debug)
         run: |
           source backend/venv/bin/activate
-          pip list
+          pip show redis
        
           
       - name: Run tests
-        
+        working-directory: ./backend
         env:
           PYTHONPATH: ${{ github.workspace }}/backend:${{ github.workspace }}/backend/app
           DB_POSTGRES_HOST: localhost
@@ -130,5 +130,5 @@ jobs:
           DB_REDIS_HOST: localhost
           AUTH_JWT_SECRET_KEY: "dummy_jwt_secret_for_ci"
         run: |
-          source backend/venv/bin/activate
-          pytest backend/app/tests
+          source venv/bin/activate
+          pytest app/tests
