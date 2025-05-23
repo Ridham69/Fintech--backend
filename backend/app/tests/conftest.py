@@ -4,6 +4,7 @@ Test configuration and fixtures.
 import asyncio
 from typing import AsyncGenerator, Generator
 import pytest
+import prometheus_client
 from fastapi import FastAPI
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -77,4 +78,9 @@ def test_settings():
     settings.app.ENVIRONMENT = "test"
     settings.app.DEBUG = True
     yield settings
-    settings = original_settings 
+    settings = original_settings
+
+@pytest.fixture(autouse=True)
+def clear_prometheus_registry():
+    """Clear Prometheus metrics registry before each test to avoid duplicate timeseries errors."""
+    prometheus_client.REGISTRY.clear()
