@@ -82,5 +82,10 @@ def test_settings():
 
 @pytest.fixture(autouse=True)
 def clear_prometheus_registry():
-    """Clear Prometheus metrics registry before each test to avoid duplicate timeseries errors."""
-    prometheus_client.REGISTRY.clear()
+    """Unregister all Prometheus metrics before each test to avoid duplicate timeseries errors."""
+    collectors = list(prometheus_client.REGISTRY._names_to_collectors.values())
+    for collector in collectors:
+        try:
+            prometheus_client.REGISTRY.unregister(collector)
+        except KeyError:
+            pass
