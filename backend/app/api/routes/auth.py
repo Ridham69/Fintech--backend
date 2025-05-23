@@ -26,7 +26,7 @@ from app.crud.user import get_user_by_id
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/auth", tags=["Authentication"])
+router = APIRouter(tags=["Authentication"])
 
 
 @router.post(
@@ -192,4 +192,4 @@ async def logout_all(
     """
     await blacklist_token(token)
     await blacklist_token(refresh_token)
-    logger.info(f"[AUTH] Logout from all devices initiated from {request.client.host}") 
+    logger.info(f"[AUTH] Logout from all devices initiated from {request.client.host}")
