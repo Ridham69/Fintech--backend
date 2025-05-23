@@ -16,6 +16,7 @@ from app.auth.utils import (
 )
 from app.models.user import User, UserRole
 from app.auth.exceptions import TokenExpiredError, TokenBlacklistedError
+from app.core.settings import settings
 
 
 @pytest.fixture
@@ -90,7 +91,7 @@ def test_token_creation_and_verification(test_user):
     # Verify token can be decoded
     decoded = jwt.decode(
         token,
-        "test_secret",  # Replace with settings.auth.JWT_SECRET_KEY in real tests
+        settings.auth.JWT_SECRET_KEY.get_secret_value(),
         algorithms=["HS256"]
     )
     assert decoded["sub"] == str(test_user.id)
@@ -108,7 +109,7 @@ async def test_token_verification():
     }
     expired_token = jwt.encode(
         expired_payload,
-        "test_secret",
+        settings.auth.JWT_SECRET_KEY.get_secret_value(),
         algorithm="HS256"
     )
     
@@ -125,7 +126,7 @@ async def test_token_verification():
     }
     valid_token = jwt.encode(
         valid_payload,
-        "test_secret",
+        settings.auth.JWT_SECRET_KEY.get_secret_value(),
         algorithm="HS256"
     )
     
@@ -147,7 +148,7 @@ async def test_token_blacklisting():
             "jti": str(uuid.uuid4()),
             "exp": datetime.utcnow() + timedelta(hours=1)
         },
-        "test_secret",
+        settings.auth.JWT_SECRET_KEY.get_secret_value(),
         algorithm="HS256"
     )
     
@@ -159,4 +160,4 @@ async def test_token_blacklisting():
         await blacklist_token(token)
         
         # Verify Redis was called with correct parameters
-        redis_mock.setex.assert_called_once() 
+        redis_mock.setex.assert_called_once()
