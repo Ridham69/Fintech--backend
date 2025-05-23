@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from jose import jwt
 
-print("JWT_SECRET_KEY:", repr(settings.auth.JWT_SECRET_KEY.get_secret_value()))
+
 from app.auth.utils import (
     hash_password,
     verify_password,
@@ -19,7 +19,7 @@ from app.models.user import User, UserRole
 from app.auth.exceptions import TokenExpiredError, TokenBlacklistedError
 from app.core.settings import settings
 
-
+print("JWT_SECRET_KEY:", repr(settings.auth.JWT_SECRET_KEY.get_secret_value()))
 @pytest.fixture
 def test_user():
     """Create a test user instance."""
