@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from jose import jwt
 
+print("JWT_SECRET_KEY:", repr(settings.auth.JWT_SECRET_KEY.get_secret_value()))
 from app.auth.utils import (
     hash_password,
     verify_password,

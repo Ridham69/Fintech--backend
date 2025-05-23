@@ -26,13 +26,13 @@ async def test_password_complexity(
     
     for password, should_pass in test_cases:
         response = await client.post(
-            "/auth/register",
-            json={
-                "email": "test@example.com",
-                "password": password,
-                "full_name": "Test User"
-            }
-        )
+    "/api/v1/auth/register",
+    json={
+        "email": "test@example.com",
+        "password": password,
+        "full_name": "Test User"
+    }
+)
         
         if should_pass:
             assert response.status_code == 201

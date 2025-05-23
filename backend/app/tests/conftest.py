@@ -1,6 +1,8 @@
 """
 Test configuration and fixtures.
 """
+import os
+os.environ["AUTH__JWT_SECRET_KEY"] = "dummy_jwt_secret_for_tests"
 import asyncio
 from typing import AsyncGenerator, Generator
 import pytest
@@ -10,6 +12,7 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
+
 
 from app.core.settings import settings
 from app.db.base import Base
