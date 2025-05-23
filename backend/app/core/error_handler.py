@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from starlette.exceptions import HTTPException
 
-from app.core import settings
+from app.core.settings import settings
 from app.core.logging import get_logger, correlation_id
 
 # Initialize logger

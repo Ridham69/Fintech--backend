@@ -25,7 +25,7 @@ from prometheus_client import Counter, Gauge, Histogram
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.types import ASGIApp
 
-from app.core import settings
+from app.core.settings import settings
 from app.core.error_handler import ValidationException
 from app.core.logging import correlation_id, get_logger
 

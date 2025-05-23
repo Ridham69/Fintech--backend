@@ -61,6 +61,8 @@ jobs:
       # ✅ Celery-related environment variables
       BROKER_URL: redis://localhost:6379/0
       RESULT_BACKEND: redis://localhost:6379/1
+      
+      
 
       # ✅ Add sync and async SQLAlchemy URIs
       SQLALCHEMY_DATABASE_URI: postgresql://test_user:test_pass@localhost:5432/test_db
@@ -143,5 +145,6 @@ jobs:
          DB_POSTGRES_DB: test_db
          DB_REDIS_HOST: localhost
          AUTH_JWT_SECRET_KEY: "dummy_jwt_secret_for_ci"
+         AUTH__JWT_SECRET_KEY: "dummy_jwt_secret_for_ci"   # <-- Add this line
         run: |
           venv/bin/python -m pytest app/tests
