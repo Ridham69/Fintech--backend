@@ -23,12 +23,13 @@ print("JWT_SECRET_KEY:", repr(settings.auth.JWT_SECRET_KEY.get_secret_value()))
 @pytest.fixture
 def test_user():
     """Create a test user instance."""
+    unique_id = uuid.uuid4().hex[:8] # Generate a short unique part
     return User(
         id=uuid.uuid4(),
-        email="test@example.com",
+        email=f"testutil_{unique_id}@example.com", # Unique email
         full_name="Test User",
-        role=UserRole.USER,
-        tenant_id=uuid.uuid4()
+        role=UserRole.USER
+        # tenant_id argument has been removed
     )
 
 
@@ -65,8 +66,8 @@ def test_token_payload_creation(test_user):
         device_id=device_id
     )
     assert access_payload["sub"] == str(test_user.id)
-    assert access_payload["role"] == test_user.role
-    assert access_payload["tenant_id"] == str(test_user.tenant_id)
+    assert access_payload["role"] == test_user.role.value # Changed to use .value
+    assert access_payload["tenant_id"] is None # Changed assertion
     assert access_payload["type"] == "access"
     assert access_payload["device_id"] == device_id
     
@@ -96,7 +97,7 @@ def test_token_creation_and_verification(test_user):
         algorithms=["HS256"]
     )
     assert decoded["sub"] == str(test_user.id)
-    assert decoded["role"] == test_user.role
+    assert decoded["role"] == test_user.role.value # Changed to use .value
 
 
 @pytest.mark.asyncio

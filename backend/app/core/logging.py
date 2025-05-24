@@ -21,7 +21,7 @@ import sys
 import time
 import traceback
 from contextvars import ContextVar
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from functools import wraps
 from logging import LogRecord
 from pathlib import Path
@@ -87,7 +87,7 @@ class ContextualJsonFormatter(jsonlogger.JsonFormatter):
         super().add_fields(log_record, record, message_dict)
 
         # Add basic context
-        log_record['timestamp'] = datetime.fromtimestamp(record.created, UTC).isoformat()
+        log_record['timestamp'] = datetime.fromtimestamp(record.created, timezone.utc).isoformat()
         log_record['level'] = record.levelname
         log_record['environment'] = settings.app.ENVIRONMENT  # FIX: use settings.app.ENVIRONMENT
         

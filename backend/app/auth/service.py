@@ -7,6 +7,7 @@ from uuid import UUID
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.settings import settings
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.user import UserCreate, UserLogin, TokenResponse
@@ -31,7 +32,7 @@ from .jwt import create_token_pair, verify_token, blacklist_token
 logger = logging.getLogger(__name__)
 
 # Constants
-MAX_LOGIN_ATTEMPTS = 5
+# MAX_LOGIN_ATTEMPTS = 5 # Replaced by settings.auth.MAX_LOGIN_ATTEMPTS
 LOCKOUT_MINUTES = 15
 
 
@@ -98,7 +99,7 @@ async def authenticate_user(
         raise InvalidCredentialsError()
     
     # Check if account is locked
-    if user.failed_login_attempts >= MAX_LOGIN_ATTEMPTS:
+    if user.failed_login_attempts >= settings.auth.MAX_LOGIN_ATTEMPTS:
         lockout_time = user.last_login + timedelta(minutes=LOCKOUT_MINUTES)
         if datetime.utcnow() < lockout_time:
             remaining_minutes = int((lockout_time - datetime.utcnow()).total_seconds() / 60)

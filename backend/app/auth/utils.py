@@ -40,7 +40,7 @@ async def get_redis() -> redis.Redis:
     global redis_client
     if redis_client is None:
         redis_client = redis.from_url(
-            settings.REDIS_URL,
+            str(settings.db.REDIS_URL),
             encoding="utf-8",
             decode_responses=True
         )
@@ -110,14 +110,15 @@ def create_token_payload(
     now = datetime.utcnow()
     
     if token_type == "access":
-        expires_delta = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expires_delta = timedelta(minutes=settings.auth.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
     else:
-        expires_delta = timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+        expires_delta = timedelta(days=settings.auth.JWT_REFRESH_TOKEN_EXPIRE_DAYS)
     
+    tenant_val = getattr(user, 'tenant_id', None)
     return {
         "sub": str(user.id),
-        "role": user.role,
-        "tenant_id": str(user.tenant_id) if user.tenant_id else None,
+        "role": user.role.value, # Changed to use .value
+        "tenant_id": str(tenant_val) if tenant_val is not None else None,
         "type": token_type,
         "jti": str(uuid.uuid4()),
         "device_id": device_id,
@@ -138,7 +139,7 @@ def create_token(payload: Dict[str, Any]) -> str:
     """
     return jwt.encode(
         payload,
-        settings.auth.JWT_SECRET_KEY,
+        settings.auth.JWT_SECRET_KEY.get_secret_value(),
         algorithm=settings.auth.JWT_ALGORITHM
     )
 
@@ -165,7 +166,7 @@ async def verify_token(
     try:
         payload = jwt.decode(
             token,
-            settings.auth.JWT_SECRET_KEY,
+            settings.auth.JWT_SECRET_KEY.get_secret_value(),
             algorithms=[settings.auth.JWT_ALGORITHM]
         )
         

@@ -7,7 +7,7 @@ from app.models.types import GUID
 from app.models.types import GUID
 
 from datetime import datetime
-from enum import Enum
+from enum import Enum as PythonEnum # Changed import
 from typing import Optional
 from uuid import UUID, uuid4
 
@@ -15,9 +15,9 @@ from sqlalchemy import Boolean, DateTime, Enum as SQLEnum, ForeignKey, String, T
 from app.models.types import GUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base_class import Base
+from app.db.base import Base # Changed import
 
-class AccountType(str, Enum):
+class AccountType(str, PythonEnum): # Changed base class
     """Types of linked accounts."""
     
     BANK = "bank"
@@ -42,7 +42,7 @@ class LinkedAccount(Base):
         index=True
     )
     account_type: Mapped[AccountType] = mapped_column(
-        SQLEnum(AccountType),
+        SQLEnum(*[at.value for at in AccountType], native_enum=False), # Applied Enum fix
         nullable=False
     )
     provider: Mapped[str] = mapped_column(
@@ -69,7 +69,9 @@ class LinkedAccount(Base):
         nullable=False,
         default=True
     )
-    metadata: Mapped[Optional[dict]] = mapped_column(
+    # Renamed 'metadata' to 'meta_data' to avoid SQLAlchemy reserved name conflict
+    meta_data: Mapped[Optional[dict]] = mapped_column(
+        "metadata", # Specify the database column name
         Text,
         nullable=True
     )

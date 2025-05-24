@@ -8,7 +8,7 @@ from typing import AsyncGenerator, Generator
 import pytest
 import prometheus_client
 from fastapi import FastAPI
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
@@ -17,6 +17,12 @@ from sqlalchemy.pool import StaticPool
 from app.core.settings import settings
 from app.db.base import Base
 from app.main import create_application
+
+# Imports for test_user fixture
+import uuid
+from app.models.user import User, UserRole
+from app.auth.utils import hash_password
+
 
 # Test database URL
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
@@ -68,7 +74,7 @@ def app() -> FastAPI:
 async def client(app: FastAPI) -> AsyncGenerator[AsyncClient, None]:
     """Create a test client."""
     async with AsyncClient(
-        app=app,
+        transport=ASGITransport(app=app),
         base_url="http://test",
         headers={"Content-Type": "application/json"}
     ) as client:
@@ -92,3 +98,22 @@ def clear_prometheus_registry():
             prometheus_client.REGISTRY.unregister(collector)
         except KeyError:
             pass
+
+
+@pytest.fixture
+async def test_user(db: AsyncSession):
+    """Create a test user in the database."""
+    unique_id = uuid.uuid4().hex[:8] # Generate a short unique part
+    user = User(
+        id=uuid.uuid4(),
+        email=f"testuser_{unique_id}@example.com", # Unique email
+        full_name="Test User",
+        hashed_password=hash_password("SecurePass123!"),
+        role=UserRole.USER,
+        is_active=True,
+        is_verified=True
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user

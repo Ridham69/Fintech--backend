@@ -7,7 +7,7 @@ from app.models.types import GUID
 from app.models.types import GUID
 
 from datetime import datetime
-from enum import Enum
+from enum import Enum as PythonEnum # Changed import
 from typing import Dict, Optional
 from uuid import UUID, uuid4
 
@@ -15,9 +15,9 @@ from sqlalchemy import DateTime, Enum as SQLEnum, ForeignKey, JSON, String, Text
 from app.models.types import GUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base_class import Base
+from app.db.base import Base # Changed import
 
-class RebalanceTriggerType(str, Enum):
+class RebalanceTriggerType(str, PythonEnum): # Changed base class
     """Type of rebalance trigger."""
     
     DEPOSIT = "deposit"
@@ -25,7 +25,7 @@ class RebalanceTriggerType(str, Enum):
     MANUAL = "manual"
     THRESHOLD = "threshold"
 
-class RebalanceStatus(str, Enum):
+class RebalanceStatus(str, PythonEnum): # Changed base class
     """Status of rebalance operation."""
     
     PENDING = "pending"
@@ -53,14 +53,14 @@ class RebalanceLog(Base):
         index=True
     )
     trigger_type: Mapped[RebalanceTriggerType] = mapped_column(
-        SQLEnum(RebalanceTriggerType),
+        SQLEnum(*[rtt.value for rtt in RebalanceTriggerType], native_enum=False), # Applied Enum fix
         nullable=False,
         index=True
     )
     status: Mapped[RebalanceStatus] = mapped_column(
-        SQLEnum(RebalanceStatus),
+        SQLEnum(*[rs.value for rs in RebalanceStatus], native_enum=False), # Applied Enum fix
         nullable=False,
-        default=RebalanceStatus.PENDING,
+        default=RebalanceStatus.PENDING.value, # Use .value for default
         index=True
     )
     before_allocations: Mapped[Dict] = mapped_column(

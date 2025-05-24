@@ -7,7 +7,7 @@ from app.models.types import GUID
 from app.models.types import GUID
 
 from datetime import datetime
-from enum import Enum
+from enum import Enum as PythonEnum # Changed import
 from typing import Optional
 from uuid import UUID, uuid4
 
@@ -15,9 +15,9 @@ from sqlalchemy import Boolean, DateTime, Enum as SQLEnum, ForeignKey, Integer, 
 from app.models.types import GUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base_class import Base
+from app.db.base import Base # Changed import
 
-class WebhookStatus(str, Enum):
+class WebhookStatus(str, PythonEnum): # Changed base class
     """Status of webhook processing."""
     
     PENDING = "pending"
@@ -48,9 +48,9 @@ class WebhookEvent(Base):
         index=True
     )
     status: Mapped[WebhookStatus] = mapped_column(
-        SQLEnum(WebhookStatus),
+        SQLEnum(*[ws.value for ws in WebhookStatus], native_enum=False), # Applied Enum fix
         nullable=False,
-        default=WebhookStatus.PENDING,
+        default=WebhookStatus.PENDING.value, # Use .value for default
         index=True
     )
     payload: Mapped[dict] = mapped_column(

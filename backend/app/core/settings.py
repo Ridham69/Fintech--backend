@@ -142,6 +142,9 @@ class AuthConfig(BaseModel):
     SESSION_COOKIE_HTTPONLY: bool = Field(default=True)
     SESSION_COOKIE_SAMESITE: str = Field(default="lax")
     
+    # Login Throttling
+    MAX_LOGIN_ATTEMPTS: int = Field(default=5)
+    
     model_config = SettingsConfigDict(
         env_prefix="AUTH_"
     )

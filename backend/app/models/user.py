@@ -20,6 +20,8 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from app.core.database import Base
 from app.models.audit_mixin import AuditMixin
+from app.models.investment import UserInvestment # Added import
+
 
 class UserRole(enum.Enum):  # or whatever your base class is
     ADMIN = "admin"
@@ -51,6 +53,8 @@ class User(Base, AuditMixin):
     # Core fields
     email = Column(String(255), unique=True, nullable=False, index=True)
     full_name = Column(String(255), nullable=False)
+    hashed_password: str = Column(String(255), nullable=False) # Added
+    role: UserRole = Column(Enum(UserRole), nullable=False, default=UserRole.USER) # Added
     phone = Column(String(20), unique=True, nullable=True)
     
     # Status flags
@@ -76,6 +80,41 @@ class User(Base, AuditMixin):
         back_populates="user",
         cascade="all, delete",
         lazy="dynamic"
+    )
+    
+    investments = relationship(
+        "UserInvestment",
+        back_populates="user",
+        cascade="all, delete",
+        lazy="dynamic"
+    )
+    
+    linked_accounts = relationship(
+        "LinkedAccount",
+        back_populates="user",
+        cascade="all, delete", 
+        lazy="dynamic" 
+    )
+
+    notifications = relationship(
+        "Notification",
+        back_populates="user",
+        cascade="all, delete", 
+        lazy="dynamic" 
+    )
+
+    notification_preferences = relationship(
+        "NotificationPreference",
+        back_populates="user",
+        cascade="all, delete",
+        uselist=False # For one-to-one relationship
+    )
+
+    rebalance_logs = relationship(
+        "RebalanceLog",
+        back_populates="user",
+        cascade="all, delete", 
+        lazy="dynamic" 
     )
     
     @hybrid_property
