@@ -23,12 +23,13 @@ print("JWT_SECRET_KEY:", repr(settings.auth.JWT_SECRET_KEY.get_secret_value()))
 @pytest.fixture
 def test_user():
     """Create a test user instance."""
+    unique_id = uuid.uuid4().hex[:8] # Generate a short unique part
     return User(
         id=uuid.uuid4(),
-        email="test@example.com",
+        email=f"testutil_{unique_id}@example.com", # Unique email
         full_name="Test User",
-        role=UserRole.USER,
-        tenant_id=uuid.uuid4()
+        role=UserRole.USER
+        # tenant_id argument has been removed
     )
 
 

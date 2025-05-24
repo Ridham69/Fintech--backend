@@ -7,7 +7,7 @@ from app.models.types import GUID
 from app.models.types import GUID
 
 from datetime import datetime
-from enum import Enum
+from enum import Enum as PythonEnum # Changed import
 from typing import Optional
 from uuid import UUID, uuid4
 
@@ -15,9 +15,9 @@ from sqlalchemy import DateTime, Enum as SQLEnum, ForeignKey, JSON, String, Text
 from app.models.types import GUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db.base_class import Base
+from app.db.base import Base # Changed import
 
-class ReconciliationStatus(str, Enum):
+class ReconciliationStatus(str, PythonEnum): # Changed base class
     """Status of reconciliation process."""
     
     PENDING = "pending"
@@ -43,9 +43,9 @@ class ReconciliationReport(Base):
         index=True
     )
     status: Mapped[ReconciliationStatus] = mapped_column(
-        SQLEnum(ReconciliationStatus),
+        SQLEnum(*[rs.value for rs in ReconciliationStatus], native_enum=False), # Applied Enum fix
         nullable=False,
-        default=ReconciliationStatus.PENDING,
+        default=ReconciliationStatus.PENDING.value, # Use .value for default
         index=True
     )
     start_time: Mapped[datetime] = mapped_column(

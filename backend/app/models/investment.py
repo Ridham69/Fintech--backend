@@ -16,7 +16,8 @@ from sqlalchemy import (
     Column,
     DateTime,
     Enum,
-    Float,
+    Float, # Keep Float for other uses if any, or remove if not used elsewhere
+    Numeric, # Added Numeric
     ForeignKey,
     String,
     Text,
@@ -26,7 +27,7 @@ from app.models.types import GUID as PGUUID
 from sqlalchemy.orm import Mapped, relationship
 
 from app.core.database import Base
-from app.models.user import User
+# from app.models.user import User # Removed to break circular import
 from app.models.transaction import Transaction
 
 class InvestmentFund(Base):
@@ -42,7 +43,7 @@ class InvestmentFund(Base):
     name: Mapped[str] = Column(String(255), nullable=False)
     description: Mapped[Optional[str]] = Column(Text)
     external_id: Mapped[str] = Column(String(100), nullable=False, unique=True)
-    current_nav: Mapped[Decimal] = Column(Float(precision=10, scale=4), nullable=False)
+    current_nav: Mapped[Decimal] = Column(Numeric(precision=10, scale=4), nullable=False) # Changed Float to Numeric
     last_updated: Mapped[datetime] = Column(DateTime(timezone=True), nullable=False)
     
     # Relationships
@@ -74,12 +75,12 @@ class UserInvestment(Base):
         nullable=False
     )
     amount_invested: Mapped[Decimal] = Column(
-        Float(precision=10, scale=2),
+        Numeric(precision=10, scale=2), # Changed Float to Numeric
         nullable=False,
         default=0
     )
     units_held: Mapped[Decimal] = Column(
-        Float(precision=10, scale=4),
+        Numeric(precision=10, scale=4), # Changed Float to Numeric
         nullable=False,
         default=0
     )
@@ -133,19 +134,19 @@ class InvestmentTransaction(Base):
         nullable=False
     )
     transaction_type: Mapped[str] = Column(
-        Enum("BUY", "SELL", "REBALANCE", name="investment_transaction_type"),
+        Enum("BUY", "SELL", "REBALANCE", name="investment_transaction_type"), # This Enum might need the same fix as others if error occurs
         nullable=False
     )
     units: Mapped[Decimal] = Column(
-        Float(precision=10, scale=4),
+        Numeric(precision=10, scale=4), # Changed Float to Numeric
         nullable=False
     )
     amount: Mapped[Decimal] = Column(
-        Float(precision=10, scale=2),
+        Numeric(precision=10, scale=2), # Changed Float to Numeric
         nullable=False
     )
     nav_at_time: Mapped[Decimal] = Column(
-        Float(precision=10, scale=4),
+        Numeric(precision=10, scale=4), # Changed Float to Numeric
         nullable=False
     )
     related_txn_id: Mapped[Optional[UUID]] = Column(

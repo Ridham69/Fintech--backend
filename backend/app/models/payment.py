@@ -11,10 +11,10 @@ payment processing through various payment providers. It includes:
 - Relationships to User and Transaction models
 """
 from app.models.types import GUID
-from app.models.types import GUID
 
 import uuid
 from datetime import datetime
+from enum import Enum as PythonEnum # Added import
 from decimal import Decimal
 from typing import Optional, Dict, Any
 
@@ -28,9 +28,11 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from app.core.database import Base
 from app.models.audit_mixin import AuditMixin
-from app.models.user import User
+# from app.models.user import User # Removed to break circular import
+# from .transaction import Transaction # Removed to break circular import
 
-class PaymentProvider(str, Enum):
+
+class PaymentProvider(str, PythonEnum): # Changed base class
     """Supported payment providers."""
     RAZORPAY = "RAZORPAY"
     STRIPE = "STRIPE"
@@ -39,7 +41,7 @@ class PaymentProvider(str, Enum):
     PHONEPE = "PHONEPE"
     GPAY = "GPAY"
 
-class PaymentIntentStatus(str, Enum):
+class PaymentIntentStatus(str, PythonEnum): # Changed base class
     """Payment intent status enum."""
     INITIATED = "INITIATED"
     REQUIRES_PAYMENT_METHOD = "REQUIRES_PAYMENT_METHOD"
@@ -51,7 +53,7 @@ class PaymentIntentStatus(str, Enum):
     CANCELLED = "CANCELLED"
     EXPIRED = "EXPIRED"
 
-class PaymentMethod(str, Enum):
+class PaymentMethod(str, PythonEnum): # Changed base class
     """Payment method types."""
     UPI = "UPI"
     NETBANKING = "NETBANKING"
@@ -93,20 +95,21 @@ class PaymentIntent(Base, AuditMixin):
     currency = Column(String(3), default="INR", nullable=False)
     
     # Provider details
-    provider = Column(Enum(PaymentProvider), nullable=False)
+    provider = Column(Enum(*[p.value for p in PaymentProvider], native_enum=False), nullable=False)
     provider_intent_id = Column(String(255), unique=True)
     status = Column(
-        Enum(PaymentIntentStatus),
-        default=PaymentIntentStatus.INITIATED,
+        Enum(*[s.value for s in PaymentIntentStatus], native_enum=False),
+        default=PaymentIntentStatus.INITIATED.value, # Ensure default is also the value
         nullable=False
     )
-    payment_method = Column(Enum(PaymentMethod), nullable=True)
+    payment_method = Column(Enum(*[m.value for m in PaymentMethod], native_enum=False), nullable=True)
     
     # Environment
     sandbox = Column(Boolean, default=True, nullable=False)
     
     # Additional details
-    metadata = Column(JSONB, nullable=True)
+    # Renamed 'metadata' to 'meta_data' to avoid SQLAlchemy reserved name conflict
+    meta_data = Column("metadata", JSONB, nullable=True) 
     error_message = Column(String(1000), nullable=True)
     return_url = Column(String(1000), nullable=True)
     webhook_url = Column(String(1000), nullable=True)

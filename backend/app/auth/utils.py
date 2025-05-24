@@ -40,7 +40,7 @@ async def get_redis() -> redis.Redis:
     global redis_client
     if redis_client is None:
         redis_client = redis.from_url(
-            settings.REDIS_URL,
+            str(settings.db.REDIS_URL),
             encoding="utf-8",
             decode_responses=True
         )
@@ -110,9 +110,9 @@ def create_token_payload(
     now = datetime.utcnow()
     
     if token_type == "access":
-        expires_delta = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expires_delta = timedelta(minutes=settings.auth.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
     else:
-        expires_delta = timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+        expires_delta = timedelta(days=settings.auth.JWT_REFRESH_TOKEN_EXPIRE_DAYS)
     
     return {
         "sub": str(user.id),
@@ -138,7 +138,7 @@ def create_token(payload: Dict[str, Any]) -> str:
     """
     return jwt.encode(
         payload,
-        settings.auth.JWT_SECRET_KEY,
+        settings.auth.JWT_SECRET_KEY.get_secret_value(),
         algorithm=settings.auth.JWT_ALGORITHM
     )
 
@@ -165,7 +165,7 @@ async def verify_token(
     try:
         payload = jwt.decode(
             token,
-            settings.auth.JWT_SECRET_KEY,
+            settings.auth.JWT_SECRET_KEY.get_secret_value(),
             algorithms=[settings.auth.JWT_ALGORITHM]
         )
         

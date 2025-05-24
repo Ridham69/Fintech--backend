@@ -5,30 +5,13 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastapi import FastAPI
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport # Added ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User, UserRole
 from app.auth.utils import hash_password
-from app.core.config import settings
-
-
-@pytest.fixture
-async def test_user(db: AsyncSession):
-    """Create a test user in the database."""
-    user = User(
-        id=uuid.uuid4(),
-        email="test@example.com",
-        full_name="Test User",
-        hashed_password=hash_password("SecurePass123!"),
-        role=UserRole.USER,
-        is_active=True,
-        is_verified=True
-    )
-    db.add(user)
-    await db.commit()
-    await db.refresh(user)
-    return user
+from app.core.settings import settings # Changed import
+# test_user fixture removed
 
 
 @pytest.fixture
@@ -40,9 +23,9 @@ def test_app(app: FastAPI):
 
 
 @pytest.fixture
-async def client(test_app: FastAPI) -> AsyncClient:
+async def client(test_app: FastAPI) -> AsyncClient: # The return type hint could also be AsyncGenerator[AsyncClient, None]
     """AsyncClient using the test app with auth routes."""
-    async with AsyncClient(app=test_app, base_url="http://test") as ac:
+    async with AsyncClient(transport=ASGITransport(app=test_app), base_url="http://test") as ac: # Changed to use transport
         yield ac
 
 
@@ -58,7 +41,7 @@ async def test_auth_lifecycle(
     
     # 1. Login
     login_response = await client.post(
-        "/auth/login",
+        "/api/v1/auth/login",
         json={
             "email": test_user.email,
             "password": "SecurePass123!",
@@ -72,7 +55,7 @@ async def test_auth_lifecycle(
     
     # 2. Access protected endpoint
     me_response = await client.get(
-        "/auth/me",
+        "/api/v1/auth/me",
         headers={"Authorization": f"Bearer {tokens['access_token']}"}
     )
     assert me_response.status_code == 200, me_response.text
@@ -81,7 +64,7 @@ async def test_auth_lifecycle(
     
     # 3. Refresh token
     refresh_response = await client.post(
-        "/auth/refresh",
+        "/api/v1/auth/refresh",
         json={"refresh_token": tokens["refresh_token"]}
     )
     assert refresh_response.status_code == 200, refresh_response.text
@@ -95,21 +78,21 @@ async def test_auth_lifecycle(
         mock_redis.return_value = redis_mock
         
         old_refresh_response = await client.post(
-            "/auth/refresh",
+            "/api/v1/auth/refresh",
             json={"refresh_token": tokens["refresh_token"]}
         )
         assert old_refresh_response.status_code == 401, old_refresh_response.text
     
     # 5. Logout
     logout_response = await client.post(
-        "/auth/logout",
+        "/api/v1/auth/logout",
         headers={"Authorization": f"Bearer {new_tokens['access_token']}"}
     )
     assert logout_response.status_code == 204, logout_response.text
     
     # 6. Verify logged out token is rejected
     me_response_after_logout = await client.get(
-        "/auth/me",
+        "/api/v1/auth/me",
         headers={"Authorization": f"Bearer {new_tokens['access_token']}"}
     )
     assert me_response_after_logout.status_code == 401, me_response_after_logout.text
@@ -126,7 +109,7 @@ async def test_failed_login_attempts(
     # Attempt multiple failed logins
     for _ in range(settings.auth.MAX_LOGIN_ATTEMPTS):
         response = await client.post(
-            "/auth/login",
+            "/api/v1/auth/login",
             json={
                 "email": test_user.email,
                 "password": "WrongPassword123!"
@@ -136,7 +119,7 @@ async def test_failed_login_attempts(
     
     # Verify account is locked
     response = await client.post(
-        "/auth/login",
+        "/api/v1/auth/login",
         json={
             "email": test_user.email,
             "password": "SecurePass123!"  # Correct password
@@ -159,7 +142,7 @@ async def test_concurrent_sessions(
     
     for device_id in devices:
         response = await client.post(
-            "/auth/login",
+            "/api/v1/auth/login",
             json={
                 "email": test_user.email,
                 "password": "SecurePass123!",
@@ -172,14 +155,14 @@ async def test_concurrent_sessions(
     # Verify both sessions are valid
     for token in tokens:
         me_response = await client.get(
-            "/auth/me",
+            "/api/v1/auth/me",
             headers={"Authorization": f"Bearer {token['access_token']}"}
         )
         assert me_response.status_code == 200, me_response.text
     
     # Logout all sessions
     logout_all_response = await client.post(
-        "/auth/logout-all",
+        "/api/v1/auth/logout-all",
         headers={"Authorization": f"Bearer {tokens[0]['access_token']}"},
         json={"refresh_token": tokens[0]["refresh_token"]}
     )
@@ -188,7 +171,7 @@ async def test_concurrent_sessions(
     # Verify all sessions are invalidated
     for token in tokens:
         me_response = await client.get(
-            "/auth/me",
+            "/api/v1/auth/me",
             headers={"Authorization": f"Bearer {token['access_token']}"}
         )
         assert me_response.status_code == 401, me_response.text

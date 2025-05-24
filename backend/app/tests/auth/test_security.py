@@ -48,7 +48,7 @@ async def test_brute_force_protection(
     # Attempt multiple failed logins
     for _ in range(settings.auth.MAX_LOGIN_ATTEMPTS + 1):
         response = await client.post(
-            "/auth/login",
+            "/api/v1/auth/login",
             json={
                 "email": test_user.email,
                 "password": "WrongPassword123!"
@@ -57,7 +57,7 @@ async def test_brute_force_protection(
     
     # Verify account is temporarily locked
     response = await client.post(
-        "/auth/login",
+        "/api/v1/auth/login",
         json={
             "email": test_user.email,
             "password": "CorrectPassword123!"
@@ -74,7 +74,7 @@ async def test_session_fixation(
     """Test protection against session fixation attacks."""
     # Login to get initial session
     login_response = await client.post(
-        "/auth/login",
+        "/api/v1/auth/login",
         json={
             "email": test_user.email,
             "password": "SecurePass123!"
@@ -85,7 +85,7 @@ async def test_session_fixation(
     
     # Change password
     await client.post(
-        "/auth/change-password",
+        "/api/v1/auth/change-password",
         headers={"Authorization": f"Bearer {initial_token}"},
         json={
             "current_password": "SecurePass123!",
@@ -95,7 +95,7 @@ async def test_session_fixation(
     
     # Verify old session is invalidated
     me_response = await client.get(
-        "/auth/me",
+        "/api/v1/auth/me",
         headers={"Authorization": f"Bearer {initial_token}"}
     )
     assert me_response.status_code == 401
@@ -108,7 +108,7 @@ async def test_token_refresh_security(
     """Test security of token refresh mechanism."""
     # Login to get initial tokens
     login_response = await client.post(
-        "/auth/login",
+        "/api/v1/auth/login",
         json={
             "email": test_user.email,
             "password": "SecurePass123!"
@@ -118,14 +118,14 @@ async def test_token_refresh_security(
     
     # Test refresh token reuse
     refresh_response = await client.post(
-        "/auth/refresh",
+        "/api/v1/auth/refresh",
         json={"refresh_token": tokens["refresh_token"]}
     )
     assert refresh_response.status_code == 200
     
     # Attempt to reuse the same refresh token
     reuse_response = await client.post(
-        "/auth/refresh",
+        "/api/v1/auth/refresh",
         json={"refresh_token": tokens["refresh_token"]}
     )
     assert reuse_response.status_code == 401
@@ -138,7 +138,7 @@ async def test_csrf_protection(
     """Test CSRF protection mechanisms."""
     # Login to get session
     login_response = await client.post(
-        "/auth/login",
+        "/api/v1/auth/login",
         json={
             "email": test_user.email,
             "password": "SecurePass123!"
@@ -148,7 +148,7 @@ async def test_csrf_protection(
     
     # Attempt request without CSRF token
     response = await client.post(
-        "/auth/change-password",
+        "/api/v1/auth/change-password",
         headers={
             "Authorization": f"Bearer {token}",
             # Missing CSRF token

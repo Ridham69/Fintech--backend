@@ -12,10 +12,10 @@ financial transactions in the system. It includes:
 - Relationships to User and other models
 """
 from app.models.types import GUID
-from app.models.types import GUID
 
 import uuid
 from datetime import datetime
+from enum import Enum as PythonEnum # Added import
 from decimal import Decimal
 from typing import Optional
 
@@ -29,9 +29,11 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from app.core.database import Base
 from app.models.audit_mixin import AuditMixin
-from app.models.user import User
+# from app.models.user import User # Removed to break circular import
+from .payment import PaymentIntent # Added for relationship type hinting
 
-class TransactionStatus(str, Enum):
+
+class TransactionStatus(str, PythonEnum): # Changed base class
     """Transaction status enum."""
     PENDING = "PENDING"
     PROCESSING = "PROCESSING"
@@ -41,12 +43,12 @@ class TransactionStatus(str, Enum):
     REFUNDED = "REFUNDED"
     CANCELLED = "CANCELLED"
 
-class TransactionType(str, Enum):
+class TransactionType(str, PythonEnum): # Changed base class
     """Transaction type enum."""
     DEBIT = "DEBIT"
     CREDIT = "CREDIT"
 
-class PaymentMethod(str, Enum):
+class PaymentMethod(str, PythonEnum): # Changed base class
     """Payment method enum."""
     UPI = "UPI"
     NETBANKING = "NETBANKING"
@@ -88,17 +90,18 @@ class Transaction(Base, AuditMixin):
     amount = Column(Numeric(precision=18, scale=2), nullable=False)
     currency = Column(String(3), default="INR")
     status = Column(
-        Enum(TransactionStatus),
-        default=TransactionStatus.PENDING,
+        Enum(*[ts.value for ts in TransactionStatus], native_enum=False), # Explicit values
+        default=TransactionStatus.PENDING.value, # Use .value for default
         nullable=False
     )
-    type = Column(Enum(TransactionType), nullable=False)
-    payment_method = Column(Enum(PaymentMethod), nullable=True)
+    type = Column(Enum(*[tt.value for tt in TransactionType], native_enum=False), nullable=False) # Explicit values
+    payment_method = Column(Enum(*[pm.value for pm in PaymentMethod], native_enum=False), nullable=True) # Explicit values
     
     # Description and reference
     description = Column(String(500), nullable=True)
     reference_id = Column(String(100), unique=True, nullable=True)
-    metadata = Column(JSONB, nullable=True)
+    # Renamed 'metadata' to 'meta_data' to avoid SQLAlchemy reserved name conflict
+    meta_data = Column("metadata", JSONB, nullable=True)
     
     # Settlement tracking
     is_settled = Column(Boolean, default=False, nullable=False)
@@ -117,12 +120,19 @@ class Transaction(Base, AuditMixin):
     
     # Relationships
     user = relationship("User", back_populates="transactions")
+    payment_intent = relationship("PaymentIntent", back_populates="transactions") # Added relationship
+    linked_account = relationship("LinkedAccount", back_populates="transactions") # Ensure this line is present
     child_transactions = relationship(
         "Transaction",
         backref="parent_transaction",
         remote_side=[id]
     )
     
+    # Foreign Keys
+    payment_intent_id = Column(GUID(), ForeignKey("payment_intents.id"), nullable=True, index=True) # Added FK column
+    # Ensure linked_account_id FK is present (it was in the read file, so this part of search should match)
+    linked_account_id = Column(GUID(), ForeignKey("linked_accounts.id"), nullable=True, index=True) 
+
     # Indexes
     __table_args__ = (
         Index("ix_transactions_user_id", "user_id"),

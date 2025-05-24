@@ -5,7 +5,7 @@ This module defines the SQLAlchemy models for document versions and user consent
 """
 
 from datetime import datetime
-from enum import Enum
+from enum import Enum as PythonEnum # Changed import
 from typing import Optional
 from uuid import UUID
 
@@ -13,9 +13,9 @@ from sqlalchemy import String, DateTime, Enum as SQLEnum, ForeignKey
 from app.models.types import GUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base_class import Base
+from app.db.base import Base # Changed import
 
-class DocumentType(str, Enum):
+class DocumentType(str, PythonEnum): # Changed base class
     """Types of legal documents requiring consent."""
     
     TERMS = "terms"
@@ -30,7 +30,7 @@ class DocumentVersion(Base):
     __tablename__ = "document_versions"
     
     id: Mapped[UUID] = mapped_column(PGUUID, primary_key=True, server_default="gen_random_uuid()")
-    type: Mapped[DocumentType] = mapped_column(SQLEnum(DocumentType), nullable=False, index=True)
+    type: Mapped[DocumentType] = mapped_column(SQLEnum(*[dt.value for dt in DocumentType], native_enum=False), nullable=False, index=True) # Applied Enum fix
     version: Mapped[str] = mapped_column(String(50), nullable=False)
     hash: Mapped[str] = mapped_column(String(64), nullable=False, index=True)  # SHA-256
     content: Mapped[str] = mapped_column(String, nullable=False)  # Store document content
