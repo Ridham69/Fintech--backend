@@ -49,8 +49,8 @@ async def test_brute_force_protection(
     for _ in range(settings.auth.MAX_LOGIN_ATTEMPTS + 1):
         response = await client.post(
             "/api/v1/auth/login",
-            json={
-                "email": test_user.email,
+            data={ 
+                "email": test_user.email, # Reverted to "email"
                 "password": "WrongPassword123!"
             }
         )
@@ -58,8 +58,8 @@ async def test_brute_force_protection(
     # Verify account is temporarily locked
     response = await client.post(
         "/api/v1/auth/login",
-        json={
-            "email": test_user.email,
+        data={ 
+            "email": test_user.email, # Reverted to "email"
             "password": "CorrectPassword123!"
         }
     )
@@ -75,8 +75,8 @@ async def test_session_fixation(
     # Login to get initial session
     login_response = await client.post(
         "/api/v1/auth/login",
-        json={
-            "email": test_user.email,
+        data={ 
+            "email": test_user.email, # Reverted to "email"
             "password": "SecurePass123!"
         }
     )
@@ -109,8 +109,8 @@ async def test_token_refresh_security(
     # Login to get initial tokens
     login_response = await client.post(
         "/api/v1/auth/login",
-        json={
-            "email": test_user.email,
+        data={ 
+            "email": test_user.email, # Reverted to "email"
             "password": "SecurePass123!"
         }
     )
@@ -139,8 +139,8 @@ async def test_csrf_protection(
     # Login to get session
     login_response = await client.post(
         "/api/v1/auth/login",
-        json={
-            "email": test_user.email,
+        data={ 
+            "email": test_user.email, # Reverted to "email"
             "password": "SecurePass123!"
         }
     )

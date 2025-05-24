@@ -114,10 +114,11 @@ def create_token_payload(
     else:
         expires_delta = timedelta(days=settings.auth.JWT_REFRESH_TOKEN_EXPIRE_DAYS)
     
+    tenant_val = getattr(user, 'tenant_id', None)
     return {
         "sub": str(user.id),
-        "role": user.role,
-        "tenant_id": str(user.tenant_id) if user.tenant_id else None,
+        "role": user.role.value, # Changed to use .value
+        "tenant_id": str(tenant_val) if tenant_val is not None else None,
         "type": token_type,
         "jti": str(uuid.uuid4()),
         "device_id": device_id,

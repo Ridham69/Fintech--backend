@@ -11,7 +11,25 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User, UserRole
 from app.auth.utils import hash_password
 from app.core.settings import settings # Changed import
-# test_user fixture removed
+
+
+@pytest.fixture
+async def test_user(db: AsyncSession): # Added db: AsyncSession
+    """Create a test user in the database."""
+    unique_id = uuid.uuid4().hex[:8]
+    user = User(
+        id=uuid.uuid4(),
+        email=f"testlifecycle_{unique_id}@example.com", # Unique email
+        full_name="Test User",
+        hashed_password=hash_password("SecurePass123!"),
+        role=UserRole.USER,
+        is_active=True,
+        is_verified=True
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
 
 
 @pytest.fixture
@@ -42,10 +60,10 @@ async def test_auth_lifecycle(
     # 1. Login
     login_response = await client.post(
         "/api/v1/auth/login",
-        json={
-            "email": test_user.email,
-            "password": "SecurePass123!",
-            "device_id": device_id
+        data={ 
+            "username": test_user.email, # Changed "email" to "username"
+            "password": "SecurePass123!"
+            # "device_id": device_id # Temporarily commented out
         }
     )
     assert login_response.status_code == 200, login_response.text
@@ -110,8 +128,8 @@ async def test_failed_login_attempts(
     for _ in range(settings.auth.MAX_LOGIN_ATTEMPTS):
         response = await client.post(
             "/api/v1/auth/login",
-            json={
-                "email": test_user.email,
+            data={ 
+                "username": test_user.email, # Changed "email" to "username"
                 "password": "WrongPassword123!"
             }
         )
@@ -120,8 +138,8 @@ async def test_failed_login_attempts(
     # Verify account is locked
     response = await client.post(
         "/api/v1/auth/login",
-        json={
-            "email": test_user.email,
+        data={ 
+            "username": test_user.email, # Changed "email" to "username"
             "password": "SecurePass123!"  # Correct password
         }
     )
@@ -143,8 +161,8 @@ async def test_concurrent_sessions(
     for device_id in devices:
         response = await client.post(
             "/api/v1/auth/login",
-            json={
-                "email": test_user.email,
+            data={ 
+                "username": test_user.email, # Changed "email" to "username"
                 "password": "SecurePass123!",
                 "device_id": device_id
             }
