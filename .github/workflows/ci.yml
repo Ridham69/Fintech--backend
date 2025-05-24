@@ -153,3 +153,4 @@ jobs:
           venv/bin/python -c "import sys; print(sys.path)"
           venv/bin/python -c "import app; print('app import OK')"
           venv/bin/python -m pytest app/tests
+          venv/bin/python -m pytest -vvv --collect-only app/tests
