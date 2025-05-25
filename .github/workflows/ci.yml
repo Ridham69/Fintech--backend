@@ -137,20 +137,13 @@ jobs:
 
       - name: Run tests
         working-directory: ./backend
-        env:
-          # Ensure PYTHONPATH is set so 'app' is importable
-          PYTHONPATH: ${{ github.workspace }}/backend:${{ github.workspace }}/backend/app
-          DB_POSTGRES_HOST: localhost
-          DB_POSTGRES_USER: test_user
-          DB_POSTGRES_PASSWORD: test_pass
-          DB_POSTGRES_DB: test_db
-          DB_REDIS_HOST: localhost
-          AUTH_JWT_SECRET_KEY: "dummy_jwt_secret_for_ci"
-          AUTH__JWT_SECRET_KEY: "dummy_jwt_secret_for_ci"
         run: |
-          # Print PYTHONPATH and check import for debugging
           echo "PYTHONPATH=$PYTHONPATH"
           venv/bin/python -c "import sys; print(sys.path)"
           venv/bin/python -c "import app; print('app import OK')"
           venv/bin/python -m pytest app/tests
+
+      - name: Pytest collect-only debug (if needed)
+        working-directory: ./backend
+        run: |
           venv/bin/python -m pytest -vvv --collect-only app/tests
