@@ -5,7 +5,7 @@ import base64
 import hashlib
 import hmac
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, Tuple, Dict, Any
 
 from argon2 import PasswordHasher
@@ -107,23 +107,25 @@ def create_token_payload(
     Returns:
         dict: Token payload
     """
-    now = datetime.utcnow()
-    
+    now = datetime.now(timezone.utc)
     if token_type == "access":
-        expires_delta = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        exp = now + timedelta(minutes=15)
+    elif token_type == "refresh":
+        exp = now + timedelta(days=7)
     else:
-        expires_delta = timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
-    
-    return {
+        raise ValueError("Invalid token type")
+
+    payload = {
         "sub": str(user.id),
         "role": user.role,
-        "tenant_id": str(user.tenant_id) if user.tenant_id else None,
+        "tenant_id": str(user.tenant_id),
         "type": token_type,
-        "jti": str(uuid.uuid4()),
         "device_id": device_id,
-        "iat": now,
-        "exp": now + expires_delta
+        "exp": int(exp.timestamp()),  # <-- Ensure this is an int!
+        "iat": int(now.timestamp()),
+        "jti": str(uuid.uuid4()),
     }
+    return payload
 
 
 def create_token(payload: Dict[str, Any]) -> str:
