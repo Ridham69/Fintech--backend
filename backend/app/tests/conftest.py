@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 import uuid
 import logging
+from urllib.parse import urlparse
 
 from app.core.settings import settings
 from app.db.base import Base
@@ -34,8 +35,10 @@ def event_loop() -> Generator:
 
 @pytest.fixture(scope="session")
 async def db_engine():
-    # Ensure the DB name is always 'test_db'
-    assert "test_db" in TEST_DATABASE_URL and "test_user" not in TEST_DATABASE_URL, f"Bad DB URL: {TEST_DATABASE_URL}"
+    # Parse the DB URL to check the DB name only
+    parsed = urlparse(TEST_DATABASE_URL)
+    db_name = parsed.path.lstrip("/")
+    assert db_name == "test_db", f"Bad DB name in URL: {TEST_DATABASE_URL}"
     engine = create_async_engine(TEST_DATABASE_URL, future=True)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
