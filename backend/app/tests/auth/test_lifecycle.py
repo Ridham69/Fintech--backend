@@ -35,7 +35,7 @@ async def test_user(db: AsyncSession):
 def test_app(app: FastAPI):
     """Get test application with auth routes."""
     from app.api.routes import auth
-    app.include_router(auth.router)
+    app.include_router(auth.router, prefix="/api/v1/auth")
     return app
 
 
@@ -58,7 +58,7 @@ async def test_auth_lifecycle(
     
     # 1. Login
     login_response = await client.post(
-        "/auth/login",
+        "/api/v1/auth/login",
         json={
             "email": test_user.email,
             "password": "SecurePass123!",
@@ -72,7 +72,7 @@ async def test_auth_lifecycle(
     
     # 2. Access protected endpoint
     me_response = await client.get(
-        "/auth/me",
+        "/api/v1/auth/me",
         headers={"Authorization": f"Bearer {tokens['access_token']}"}
     )
     assert me_response.status_code == 200, me_response.text
@@ -81,7 +81,7 @@ async def test_auth_lifecycle(
     
     # 3. Refresh token
     refresh_response = await client.post(
-        "/auth/refresh",
+        "/api/v1/auth/refresh",
         json={"refresh_token": tokens["refresh_token"]}
     )
     assert refresh_response.status_code == 200, refresh_response.text
@@ -95,21 +95,21 @@ async def test_auth_lifecycle(
         mock_redis.return_value = redis_mock
         
         old_refresh_response = await client.post(
-            "/auth/refresh",
+            "/api/v1/auth/refresh",
             json={"refresh_token": tokens["refresh_token"]}
         )
         assert old_refresh_response.status_code == 401, old_refresh_response.text
     
     # 5. Logout
     logout_response = await client.post(
-        "/auth/logout",
+        "/api/v1/auth/logout",
         headers={"Authorization": f"Bearer {new_tokens['access_token']}"}
     )
     assert logout_response.status_code == 204, logout_response.text
     
     # 6. Verify logged out token is rejected
     me_response_after_logout = await client.get(
-        "/auth/me",
+        "/api/v1/auth/me",
         headers={"Authorization": f"Bearer {new_tokens['access_token']}"}
     )
     assert me_response_after_logout.status_code == 401, me_response_after_logout.text
@@ -126,7 +126,7 @@ async def test_failed_login_attempts(
     # Attempt multiple failed logins
     for _ in range(settings.auth.MAX_LOGIN_ATTEMPTS):
         response = await client.post(
-            "/auth/login",
+            "/api/v1/auth/login",
             json={
                 "email": test_user.email,
                 "password": "WrongPassword123!"
@@ -136,7 +136,7 @@ async def test_failed_login_attempts(
     
     # Verify account is locked
     response = await client.post(
-        "/auth/login",
+        "/api/v1/auth/login",
         json={
             "email": test_user.email,
             "password": "SecurePass123!"  # Correct password
@@ -159,7 +159,7 @@ async def test_concurrent_sessions(
     
     for device_id in devices:
         response = await client.post(
-            "/auth/login",
+            "/api/v1/auth/login",
             json={
                 "email": test_user.email,
                 "password": "SecurePass123!",
@@ -172,14 +172,14 @@ async def test_concurrent_sessions(
     # Verify both sessions are valid
     for token in tokens:
         me_response = await client.get(
-            "/auth/me",
+            "/api/v1/auth/me",
             headers={"Authorization": f"Bearer {token['access_token']}"}
         )
         assert me_response.status_code == 200, me_response.text
     
     # Logout all sessions
     logout_all_response = await client.post(
-        "/auth/logout-all",
+        "/api/v1/auth/logout-all",
         headers={"Authorization": f"Bearer {tokens[0]['access_token']}"},
         json={"refresh_token": tokens[0]["refresh_token"]}
     )
@@ -188,7 +188,7 @@ async def test_concurrent_sessions(
     # Verify all sessions are invalidated
     for token in tokens:
         me_response = await client.get(
-            "/auth/me",
+            "/api/v1/auth/me",
             headers={"Authorization": f"Bearer {token['access_token']}"}
         )
         assert me_response.status_code == 401, me_response.text

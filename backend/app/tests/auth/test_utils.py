@@ -105,7 +105,7 @@ async def test_token_verification():
     # Create expired token
     expired_payload = {
         "sub": str(uuid.uuid4()),
-        "exp": datetime.utcnow() - timedelta(hours=1),
+        "exp": int((datetime.utcnow() - timedelta(hours=1)).timestamp()),  # Ensure exp is int
         "type": "access"
     }
     expired_token = jwt.encode(
@@ -121,7 +121,7 @@ async def test_token_verification():
     # Test blacklisted token
     valid_payload = {
         "sub": str(uuid.uuid4()),
-        "exp": datetime.utcnow() + timedelta(hours=1),
+        "exp": int((datetime.utcnow() + timedelta(hours=1)).timestamp()),  # Ensure exp is int
         "type": "access",
         "jti": str(uuid.uuid4())
     }
@@ -132,7 +132,7 @@ async def test_token_verification():
     )
     
     # Mock Redis to simulate blacklisted token
-    with patch("app.auth.utils.get_redis") as mock_redis:
+    with patch("app.auth.utils.get_redis", new_callable=AsyncMock) as mock_redis:
         redis_mock = AsyncMock()
         redis_mock.get.return_value = "1"  # Token is blacklisted
         mock_redis.return_value = redis_mock
@@ -147,14 +147,14 @@ async def test_token_blacklisting():
     token = jwt.encode(
         {
             "jti": str(uuid.uuid4()),
-            "exp": datetime.utcnow() + timedelta(hours=1)
+            "exp": int((datetime.utcnow() + timedelta(hours=1)).timestamp())  # Ensure exp is int
         },
         settings.auth.JWT_SECRET_KEY.get_secret_value(),
         algorithm="HS256"
     )
     
     # Mock Redis for blacklisting
-    with patch("app.auth.utils.get_redis") as mock_redis:
+    with patch("app.auth.utils.get_redis", new_callable=AsyncMock) as mock_redis:
         redis_mock = AsyncMock()
         mock_redis.return_value = redis_mock
         
