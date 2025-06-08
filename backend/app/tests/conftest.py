@@ -33,12 +33,11 @@ def event_loop() -> Generator:
     loop.close()
 
 @pytest.fixture(scope="session")
-async def engine():
-    """Create a test database engine and schema."""
-    print(f"\n[TEST] Using DB: {TEST_DATABASE_URL}\n")
+async def db_engine():
+    # Ensure the DB name is always 'test_db'
+    assert "test_db" in TEST_DATABASE_URL and "test_user" not in TEST_DATABASE_URL, f"Bad DB URL: {TEST_DATABASE_URL}"
     engine = create_async_engine(TEST_DATABASE_URL, future=True)
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
     yield engine
     async with engine.begin() as conn:
@@ -46,19 +45,10 @@ async def engine():
     await engine.dispose()
 
 @pytest.fixture
-async def db(engine) -> AsyncGenerator[AsyncSession, None]:
-    """Create a test database session."""
-    async_session = sessionmaker(
-        engine, class_=AsyncSession, expire_on_commit=False
-    )
+async def db(db_engine):
+    async_session = sessionmaker(db_engine, class_=AsyncSession, expire_on_commit=False)
     async with async_session() as session:
-        try:
-            yield session
-        except Exception as e:
-            logging.exception("DB session error")
-            raise
-        finally:
-            await session.rollback()
+        yield session
 
 @pytest.fixture
 def app() -> FastAPI:
@@ -111,31 +101,9 @@ async def test_user(db: AsyncSession):
     await db.refresh(user)
     return user
 
-@pytest.fixture(scope="session")
-def anyio_backend():
-    return "asyncio"
-
-@pytest.fixture(scope="session")
-async def db_engine():
-    # Ensure the DB name is always 'test_db'
-    assert "test_db" in TEST_DATABASE_URL and "test_user" not in TEST_DATABASE_URL, f"Bad DB URL: {TEST_DATABASE_URL}"
-    engine = create_async_engine(TEST_DATABASE_URL, future=True)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    yield engine
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-    await engine.dispose()
-
-@pytest.fixture
-async def db(db_engine):
-    async_session = sessionmaker(db_engine, class_=AsyncSession, expire_on_commit=False)
-    async with async_session() as session:
-        yield session
-
 @pytest.hookimpl(tryfirst=True)
 def pytest_sessionstart(session):
     db_url = os.getenv("DATABASE_URL")
     logging.warning(f"PYTEST: Using DATABASE_URL = {db_url}")
-    if db_url and "test_user" in db_url:
+    if db_url and "test_user" in db_url and not db_url.endswith("/test_db"):
         raise RuntimeError("DATABASE_URL is misconfigured: references 'test_user' as DB name!")

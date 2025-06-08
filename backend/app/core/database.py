@@ -9,7 +9,7 @@ from app.db.base import Base
 
 # You can use environment variables or a settings module for config
 DATABASE_URL = os.getenv(
-    "DB_URL",
+    "DATABASE_URL",  # <-- FIXED: use DATABASE_URL, not DB_URL
     "postgresql+asyncpg://test_user:test_pass@localhost:5432/test_db"
 )
 
