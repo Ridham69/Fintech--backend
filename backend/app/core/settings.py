@@ -15,6 +15,7 @@ Includes configurations for:
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Union
+import os
 
 from pydantic import (
     AnyHttpUrl,
@@ -374,3 +375,6 @@ def get_settings() -> AppSettings:
 
 # Create global settings instance
 settings = get_settings()
+
+# Fallback DATABASE_URL for testing
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres:postgres@localhost:5432/test_db")

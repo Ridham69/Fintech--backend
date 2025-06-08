@@ -10,10 +10,14 @@ from fastapi import FastAPI
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
+import uuid
+import logging
 
 from app.core.settings import settings
 from app.db.base import Base
 from app.main import create_application
+from app.models.user import User
+from app.auth.utils import hash_password
 
 # Use Postgres test DB from env or fallback
 TEST_DATABASE_URL = os.environ.get(
@@ -51,7 +55,6 @@ async def db(engine) -> AsyncGenerator[AsyncSession, None]:
         try:
             yield session
         except Exception as e:
-            import logging
             logging.exception("DB session error")
             raise
         finally:
@@ -91,3 +94,48 @@ def clear_prometheus_registry():
             prometheus_client.REGISTRY.unregister(collector)
         except KeyError:
             pass
+
+@pytest.fixture
+async def test_user(db: AsyncSession):
+    """Create a test user with a unique UUID-based email and id."""
+    user = User(
+        id=str(uuid.uuid4()),
+        email=f"user-{uuid.uuid4()}@example.com",
+        full_name="Test User",
+        hashed_password=hash_password("SecurePass123!"),
+        is_active=True,
+        is_superuser=False,
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
+
+@pytest.fixture(scope="session")
+def anyio_backend():
+    return "asyncio"
+
+@pytest.fixture(scope="session")
+async def db_engine():
+    # Ensure the DB name is always 'test_db'
+    assert "test_db" in TEST_DATABASE_URL and "test_user" not in TEST_DATABASE_URL, f"Bad DB URL: {TEST_DATABASE_URL}"
+    engine = create_async_engine(TEST_DATABASE_URL, future=True)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield engine
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+    await engine.dispose()
+
+@pytest.fixture
+async def db(db_engine):
+    async_session = sessionmaker(db_engine, class_=AsyncSession, expire_on_commit=False)
+    async with async_session() as session:
+        yield session
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_sessionstart(session):
+    db_url = os.getenv("DATABASE_URL")
+    logging.warning(f"PYTEST: Using DATABASE_URL = {db_url}")
+    if db_url and "test_user" in db_url:
+        raise RuntimeError("DATABASE_URL is misconfigured: references 'test_user' as DB name!")
