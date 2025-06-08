@@ -137,6 +137,8 @@ jobs:
 
       - name: Run tests
         working-directory: ./backend
+        env:
+          PYTHONPATH: ${{ github.workspace }}/backend
         run: |
           echo "PYTHONPATH=$PYTHONPATH"
           venv/bin/python -c "import sys; print(sys.path)"
@@ -145,5 +147,7 @@ jobs:
 
       - name: Pytest collect-only debug (if needed)
         working-directory: ./backend
+        env:
+          PYTHONPATH: ${{ github.workspace }}/backend
         run: |
           venv/bin/python -m pytest -vvv --collect-only app/tests
