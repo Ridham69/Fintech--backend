@@ -146,6 +146,8 @@ jobs:
         run: |
           PGPASSWORD=test_pass psql -h localhost -U test_user -d postgres -c "SELECT 1 FROM pg_database WHERE datname='test_db';" | grep -q 1 || \
           PGPASSWORD=test_pass psql -h localhost -U test_user -d postgres -c "CREATE DATABASE test_db;"
+          # Grant all privileges to test_user on test_db (fixes permission issues)
+          PGPASSWORD=test_pass psql -h localhost -U test_user -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE test_db TO test_user;"
 
       - name: Run tests
         working-directory: ./backend
