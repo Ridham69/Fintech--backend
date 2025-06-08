@@ -145,9 +145,9 @@ jobs:
           venv/bin/python -c "import app; print('app import OK')"
           venv/bin/python -m pytest -vv -s --tb=long app/tests
 
-      - name: Pytest collect-only debug (if needed)
+      - name: Pytest lifecycle debug (show full errors)
         working-directory: ./backend
         env:
           PYTHONPATH: ${{ github.workspace }}/backend
         run: |
-          venv/bin/python -m pytest -vvv --collect-only app/tests
+          venv/bin/python -m pytest -vv -s --tb=long app/tests/auth/test_lifecycle.py
