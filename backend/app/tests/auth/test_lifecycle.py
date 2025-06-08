@@ -18,7 +18,7 @@ async def test_user(db: AsyncSession):
     """Create a test user in the database."""
     user = User(
         id=uuid.uuid4(),
-        email="test@example.com",
+        email=f"{uuid.uuid4()}@example.com",  # Use unique email per test
         full_name="Test User",
         hashed_password=hash_password("SecurePass123!"),
         role=UserRole.USER,

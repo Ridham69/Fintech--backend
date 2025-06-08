@@ -2,7 +2,6 @@
 Test configuration and fixtures.
 """
 import os
-os.environ["AUTH__JWT_SECRET_KEY"] = "dummy_jwt_secret_for_tests"
 import asyncio
 from typing import AsyncGenerator, Generator
 import pytest
@@ -11,15 +10,16 @@ from fastapi import FastAPI
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
-
 
 from app.core.settings import settings
 from app.db.base import Base
 from app.main import create_application
 
-# Test database URL
-TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
+# Use Postgres test DB from env or fallback
+TEST_DATABASE_URL = os.environ.get(
+    "DATABASE_URL",
+    "postgresql+asyncpg://test_user:test_pass@localhost:5432/test_db"
+)
 
 @pytest.fixture(scope="session")
 def event_loop() -> Generator:
@@ -30,21 +30,15 @@ def event_loop() -> Generator:
 
 @pytest.fixture(scope="session")
 async def engine():
-    """Create a test database engine."""
-    engine = create_async_engine(
-        TEST_DATABASE_URL,
-        poolclass=StaticPool,
-        connect_args={"check_same_thread": False},
-    )
-    
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    
-    yield engine
-    
+    """Create a test database engine and schema."""
+    print(f"\n[TEST] Using DB: {TEST_DATABASE_URL}\n")
+    engine = create_async_engine(TEST_DATABASE_URL, future=True)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
-    
+        await conn.run_sync(Base.metadata.create_all)
+    yield engine
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
     await engine.dispose()
 
 @pytest.fixture
@@ -53,10 +47,15 @@ async def db(engine) -> AsyncGenerator[AsyncSession, None]:
     async_session = sessionmaker(
         engine, class_=AsyncSession, expire_on_commit=False
     )
-    
     async with async_session() as session:
-        yield session
-        await session.rollback()
+        try:
+            yield session
+        except Exception as e:
+            import logging
+            logging.exception("DB session error")
+            raise
+        finally:
+            await session.rollback()
 
 @pytest.fixture
 def app() -> FastAPI:

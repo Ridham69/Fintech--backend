@@ -25,7 +25,7 @@ def test_user():
     """Create a test user instance."""
     return User(
         id=uuid.uuid4(),
-        email="test@example.com",
+        email=f"{uuid.uuid4()}@example.com",  # Use unique email per test
         full_name="Test User",
         role=UserRole.USER,
         tenant_id=uuid.uuid4()

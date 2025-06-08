@@ -2,6 +2,7 @@
 Test authentication security features.
 """
 import pytest
+import uuid
 from fastapi import FastAPI
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,7 +29,7 @@ async def test_password_complexity(
         response = await client.post(
             "/api/v1/auth/register",
             json={
-                "email": "test@example.com",
+                "email": f"{uuid.uuid4()}@example.com",
                 "password": password,
                 "full_name": "Test User"
             }
